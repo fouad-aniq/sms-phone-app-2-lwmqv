@@ -78,7 +78,7 @@ public class DomainServiceScheduleUpdateListener implements DomainPortScheduleUp
         if (schedule.getRecipient() == null || schedule.getRecipient().isEmpty()) {
             throw new DomainExceptionInvalidSchedule("Recipient cannot be null or empty");
         }
-        if (schedule.getScheduledTime() is null) {
+        if (schedule.getScheduledTime() == null) {  // Fixed line
             throw new DomainExceptionInvalidSchedule("Scheduled time cannot be null");
         }
         if (schedule.getStatus() == null) {

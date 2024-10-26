@@ -5,11 +5,8 @@ import ai.shreds.domain.services.DomainServiceMessageTrigger;
 import ai.shreds.application.services.ApplicationServiceErrorHandling;
 import ai.shreds.shared.SharedScheduleDTO;
 import ai.shreds.domain.entities.DomainEntitySchedule;
-import ai.shreds.shared.SharedValueScheduleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.UUID;
-import java.sql.Timestamp;
 
 @Service
 public class ApplicationServiceMessageTrigger implements ApplicationOutputPortMessageTrigger {
@@ -40,7 +37,7 @@ public class ApplicationServiceMessageTrigger implements ApplicationOutputPortMe
         domainSchedule.setMessageContent(scheduleDTO.getMessageContent());
         domainSchedule.setRecipient(scheduleDTO.getRecipient());
         domainSchedule.setScheduledTime(scheduleDTO.getScheduledTime());
-        domainSchedule.setStatus(SharedValueScheduleStatus.valueOf(scheduleDTO.getStatus()));
+        domainSchedule.setStatus(scheduleDTO.getStatus());
         domainSchedule.setCreatedAt(scheduleDTO.getCreatedAt());
         domainSchedule.setUpdatedAt(scheduleDTO.getUpdatedAt());
         return domainSchedule;

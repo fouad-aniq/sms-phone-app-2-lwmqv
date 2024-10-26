@@ -1,12 +1,12 @@
 package ai.shreds.application.services;
 
-import ai.shreds.application.mappers.ScheduleMapper;
 import ai.shreds.application.ports.ApplicationInputPortScheduleUpdateListener;
 import ai.shreds.domain.entities.DomainEntitySchedule;
 import ai.shreds.domain.services.DomainServiceScheduleUpdateListener;
 import ai.shreds.shared.SharedScheduleAddedEvent;
 import ai.shreds.shared.SharedScheduleRemovedEvent;
 import ai.shreds.shared.SharedScheduleUpdatedEvent;
+import ai.shreds.infrastructure.repositories.mapper.ScheduleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

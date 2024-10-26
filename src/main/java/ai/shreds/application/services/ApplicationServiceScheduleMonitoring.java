@@ -5,12 +5,12 @@ import ai.shreds.application.ports.ApplicationOutputPortMessageTrigger;
 import ai.shreds.domain.entities.DomainEntitySchedule;
 import ai.shreds.domain.services.DomainServiceScheduleMonitoring;
 import ai.shreds.shared.SharedScheduleDTO;
-import ai.shreds.application.services.ApplicationServiceErrorHandling;
+import ai.shreds.shared.SharedValueScheduleStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
-import java.time.Timestamp;
+import java.sql.Timestamp;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class ApplicationServiceScheduleMonitoring implements ApplicationInputPor
         scheduleDTO.setMessageContent(schedule.getMessageContent());
         scheduleDTO.setRecipient(schedule.getRecipient());
         scheduleDTO.setScheduledTime(schedule.getScheduledTime());
-        scheduleDTO.setStatus(schedule.getStatus().getValue());
+        scheduleDTO.setStatus(schedule.getStatus());
         scheduleDTO.setCreatedAt(schedule.getCreatedAt());
         scheduleDTO.setUpdatedAt(schedule.getUpdatedAt());
         return scheduleDTO;

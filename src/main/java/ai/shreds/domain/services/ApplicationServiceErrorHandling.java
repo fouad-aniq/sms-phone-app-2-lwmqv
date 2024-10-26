@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import ai.shreds.domain.exceptions.DomainExceptionInvalidSchedule;
 import ai.shreds.domain.exceptions.DomainExceptionScheduleNotFound;
 
-public class DomainServiceErrorHandling {
+public class ApplicationServiceErrorHandling {
 
-    private static final Logger logger = LoggerFactory.getLogger(DomainServiceErrorHandling.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationServiceErrorHandling.class);
 
     public void handleError(Exception exception, Object context) {
         // Log the error

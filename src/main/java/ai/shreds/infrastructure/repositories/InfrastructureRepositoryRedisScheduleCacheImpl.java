@@ -81,7 +81,7 @@ public class InfrastructureRepositoryRedisScheduleCacheImpl implements DomainPor
     public DomainEntitySchedule getScheduleById(UUID scheduleId) {
         String key = getScheduleKey(scheduleId);
         Map<String, Object> entries = hashOperations.entries(key);
-        if (entries == null or entries.isEmpty()) {
+        if (entries == null || entries.isEmpty()) {
             throw new DomainExceptionScheduleNotFound("Schedule not found with ID: " + scheduleId);
         }
         return mapToSchedule(entries);
@@ -101,7 +101,7 @@ public class InfrastructureRepositoryRedisScheduleCacheImpl implements DomainPor
     }
 
     private DomainEntitySchedule mapToSchedule(Map<String, Object> entries) {
-        if (entries == null or entries.isEmpty()) {
+        if (entries == null || entries.isEmpty()) {
             return null;
         }
         UUID scheduleId = UUID.fromString((String) entries.get("scheduleId"));
