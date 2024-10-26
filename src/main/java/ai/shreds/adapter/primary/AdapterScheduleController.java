@@ -4,6 +4,7 @@ import ai.shreds.application.ports.ApplicationCreateScheduleInputPort;
 import ai.shreds.application.ports.ApplicationUpdateScheduleInputPort;
 import ai.shreds.application.ports.ApplicationDeleteScheduleInputPort;
 import ai.shreds.application.ports.ApplicationValidateScheduleInputPort;
+import ai.shreds.domain.exceptions.DomainInvalidScheduleException;
 import ai.shreds.shared.SharedScheduleDto;
 import ai.shreds.shared.SharedScheduleResponse;
 import ai.shreds.shared.SharedValidationResponse;
@@ -35,12 +36,12 @@ public class AdapterScheduleController {
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
-    public SharedScheduleDto createSchedule(@RequestBody SharedScheduleDto scheduleDto) {
+    public SharedScheduleDto createSchedule(@RequestBody SharedScheduleDto scheduleDto) throws DomainInvalidScheduleException {
         return createScheduleInputPort.createSchedule(scheduleDto);
     }
 
     @PutMapping("/{scheduleId}")
-    public SharedScheduleDto modifySchedule(@PathVariable UUID scheduleId, @RequestBody SharedScheduleDto scheduleDto) {
+    public SharedScheduleDto modifySchedule(@PathVariable UUID scheduleId, @RequestBody SharedScheduleDto scheduleDto) throws DomainInvalidScheduleException {
         return updateScheduleInputPort.updateSchedule(scheduleId, scheduleDto);
     }
 

@@ -3,7 +3,6 @@ package ai.shreds.infrastructure.repositories;
 import ai.shreds.domain.entities.DomainScheduleEntity;
 import ai.shreds.domain.ports.DomainScheduleRepositoryPort;
 import ai.shreds.infrastructure.entities.InfrastructureScheduleEntity;
-import ai.shreds.infrastructure.exceptions.InfrastructureDataAccessException;
 import ai.shreds.infrastructure.mappers.InfrastructureScheduleMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -29,10 +28,9 @@ public class InfrastructureScheduleRepositoryImpl implements DomainScheduleRepos
     }
 
     @Override
-    public DomainScheduleEntity findById(UUID scheduleId) {
+    public Optional<DomainScheduleEntity> findById(UUID scheduleId) {
         Optional<InfrastructureScheduleEntity> optionalEntity = jpaScheduleRepository.findById(scheduleId);
-        return optionalEntity.map(scheduleMapper::toDomainEntityFromDatabase)
-            .orElseThrow(() -> new InfrastructureDataAccessException("Schedule not found with ID: " + scheduleId));
+        return optionalEntity.map(scheduleMapper::toDomainEntityFromDatabase);
     }
 
     @Override

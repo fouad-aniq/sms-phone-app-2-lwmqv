@@ -31,7 +31,7 @@ public class ApplicationScheduleService implements ApplicationCreateScheduleInpu
     private final ApplicationScheduleMapper scheduleMapper;
 
     @Override
-    public SharedScheduleDto createSchedule(SharedScheduleDto scheduleDto) {
+    public SharedScheduleDto createSchedule(SharedScheduleDto scheduleDto) throws DomainInvalidScheduleException {
         DomainScheduleEntity scheduleEntity = scheduleMapper.toDomain(scheduleDto);
         scheduleValidationServicePort.validateSchedule(scheduleEntity);
         scheduleRepositoryPort.save(scheduleEntity);
@@ -40,7 +40,7 @@ public class ApplicationScheduleService implements ApplicationCreateScheduleInpu
     }
 
     @Override
-    public SharedScheduleDto updateSchedule(UUID scheduleId, SharedScheduleDto scheduleDto) {
+    public SharedScheduleDto updateSchedule(UUID scheduleId, SharedScheduleDto scheduleDto) throws DomainInvalidScheduleException {
         if (!scheduleRepositoryPort.existsById(scheduleId)) {
             throw new IllegalArgumentException("Schedule with ID " + scheduleId + " does not exist.");
         }

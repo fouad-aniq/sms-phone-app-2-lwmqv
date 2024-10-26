@@ -1,6 +1,7 @@
 package ai.shreds.domain.ports;
 
 import ai.shreds.domain.entities.DomainScheduleEntity;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DomainScheduleRepositoryPort {
@@ -17,9 +18,9 @@ public interface DomainScheduleRepositoryPort {
      * Retrieves a Schedule entity by its unique identifier.
      *
      * @param scheduleId the UUID of the schedule to retrieve
-     * @return the schedule entity if found, or null if not found
+     * @return an Optional containing the schedule entity if found, or an empty Optional if not found
      */
-    DomainScheduleEntity findById(UUID scheduleId);
+    Optional<DomainScheduleEntity> findById(UUID scheduleId);
 
     /**
      * Deletes the Schedule entity with the given unique identifier from the data store.
