@@ -21,10 +21,10 @@ public class AdapterKafkaMessageConsumer {
     @Autowired
     private AdapterExceptionHandler adapterExceptionHandler;
 
-    @KafkaListener(topics = 'message-processing-topic', groupId = 'message-processing-group')
+    @KafkaListener(topics = "message-processing-topic", groupId = "message-processing-group")
     public void onMessageReceived(SharedMessageRequest message) {
         try {
-            logger.info('Received message: {}', message);
+            logger.info("Received message: {}", message);
 
             SharedMessageRequestDTO messageDTO = mapToDTO(message);
 

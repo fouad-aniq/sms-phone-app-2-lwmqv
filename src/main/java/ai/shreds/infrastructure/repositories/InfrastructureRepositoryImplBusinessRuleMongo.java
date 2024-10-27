@@ -69,5 +69,25 @@ public class InfrastructureRepositoryImplBusinessRuleMongo implements DomainPort
         private String description;
         private String logic;
         private Boolean isActive;
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getLogic() {
+            return logic;
+        }
+
+        public Boolean getIsActive() {
+            return isActive;
+        }
     }
 }

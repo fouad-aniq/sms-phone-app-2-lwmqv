@@ -19,7 +19,7 @@ import java.util.Map;
 public class SharedMessageRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @NotNull
+    @NotEmpty // Changed from @NotNull to @NotEmpty for id
     private String id;
 
     @NotEmpty

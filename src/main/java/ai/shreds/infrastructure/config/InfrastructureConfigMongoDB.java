@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -18,7 +18,7 @@ public class InfrastructureConfigMongoDB {
     private final String mongoUri;
 
     @Autowired
-    public InfrastructureConfigMongoDB(@Value('${mongodb.uri}') String mongoUri) {
+    public InfrastructureConfigMongoDB(@Value("${mongodb.uri}") String mongoUri) {
         this.mongoUri = mongoUri;
     }
 
@@ -33,7 +33,7 @@ public class InfrastructureConfigMongoDB {
 
     @Bean
     public MongoDatabaseFactory mongoDatabaseFactory() {
-        return new SimpleMongoClientDatabaseFactory(mongoClient());
+        return new SimpleMongoClientDatabaseFactory(mongoClient(), "yourDatabaseName");
     }
 
     @Bean

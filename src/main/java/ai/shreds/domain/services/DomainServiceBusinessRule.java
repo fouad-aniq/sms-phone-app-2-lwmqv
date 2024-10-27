@@ -1,11 +1,12 @@
-package domain.services;
+package ai.shreds.domain.services;
+
+import ai.shreds.domain.entities.DomainEntityMessageRequest;
+import ai.shreds.domain.entities.DomainEntityBusinessRule;
+import ai.shreds.domain.ports.DomainPortBusinessRuleRepository;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import domain.entities.DomainEntityMessageRequest;
-import domain.entities.DomainEntityBusinessRule;
-import domain.ports.DomainPortBusinessRuleRepository;
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class DomainServiceBusinessRule {
@@ -13,7 +14,7 @@ public class DomainServiceBusinessRule {
 
     public DomainEntityMessageRequest applyRules(DomainEntityMessageRequest messageRequest) {
         List<DomainEntityBusinessRule> activeRules = businessRuleRepository.findAll().stream()
-            .filter(DomainEntityBusinessRule::isActive)
+            .filter(DomainEntityBusinessRule::getIsActive)
             .collect(Collectors.toList());
 
         for (DomainEntityBusinessRule rule : activeRules) {
