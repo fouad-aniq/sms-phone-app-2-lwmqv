@@ -8,8 +8,8 @@ import ai.shreds.domain.ports.DomainPortSmsGatewayClient;
 import ai.shreds.infrastructure.external_services.InfrastructureClientSmsGatewayClientImpl;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import ai.shreds.grpc.SmsGatewayServiceGrpc;
-import ai.shreds.grpc.SmsGatewayServiceGrpc.SmsGatewayServiceStub;
+import ai.shreds.infrastructure.external_services.grpc.SmsGatewayServiceGrpc;
+import ai.shreds.infrastructure.external_services.grpc.SmsGatewayServiceGrpc.SmsGatewayServiceStub;
 
 @Configuration
 public class InfrastructureConfigGrpcClientConfiguration {

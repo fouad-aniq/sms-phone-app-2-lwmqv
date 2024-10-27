@@ -5,13 +5,9 @@ import ai.shreds.domain.ports.DomainPortSmsGatewayClient;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import ai.shreds.infrastructure.external_services.grpc.SmsGatewayServiceGrpc;
-import ai.shreds.infrastructure.external_services.grpc.SendMessageRequest;
-import ai.shreds.infrastructure.external_services.grpc.SendMessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 @Component
 public class InfrastructureClientSmsGatewayClientImpl implements DomainPortSmsGatewayClient {
@@ -26,29 +22,22 @@ public class InfrastructureClientSmsGatewayClientImpl implements DomainPortSmsGa
     @CircuitBreaker(name = "smsGatewayCircuitBreaker")
     public void sendMessage(DomainEntityProcessedMessage message) {
         SendMessageRequest request = mapToSendMessageRequest(message);
-        Mono<SendMessageResponse> responseMono = Mono.create(sink ->
-            smsGatewayServiceStub.sendMessage(request, new io.grpc.stub.StreamObserver<SendMessageResponse>() {
-                @Override
-                public void onNext(SendMessageResponse response) {
-                    sink.success(response);
-                }
+        smsGatewayServiceStub.sendMessage(request, new io.grpc.stub.StreamObserver<SendMessageResponse>() {
+            @Override
+            public void onNext(SendMessageResponse response) {
+                logger.info("Message sent successfully: {}", response.getStatus());
+            }
 
-                @Override
-                public void onError(Throwable t) {
-                    sink.error(t);
-                }
+            @Override
+            public void onError(Throwable t) {
+                logger.error("Failed to send message: {}", t.getMessage());
+            }
 
-                @Override
-                public void onCompleted() {
-                    // Do nothing
-                }
-            })
-        );
-
-        responseMono.subscribe(
-            response -> logger.info("Message sent successfully: {}", response.getStatus()),
-            error -> logger.error("Failed to send message: {}", error.getMessage())
-        );
+            @Override
+            public void onCompleted() {
+                // Do nothing
+            }
+        });
     }
 
     private SendMessageRequest mapToSendMessageRequest(DomainEntityProcessedMessage message) {

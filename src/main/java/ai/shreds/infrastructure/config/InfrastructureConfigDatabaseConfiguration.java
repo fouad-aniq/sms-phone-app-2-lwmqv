@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.beans.factory.annotation.Value;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 @Configuration
 public class InfrastructureConfigDatabaseConfiguration {
@@ -20,8 +20,8 @@ public class InfrastructureConfigDatabaseConfiguration {
     }
 
     @Bean
-    public MongoClient reactiveMongoClient(@Value("${spring.data.mongodb.uri}") String mongoUri) {
-        // Create a ReactiveMongoClient using the mongoUri from external configuration
+    public MongoClient mongoClient(@Value("${spring.data.mongodb.uri}") String mongoUri) {
+        // Create a MongoClient using the mongoUri from external configuration
         return MongoClients.create(mongoUri);
     }
 }
