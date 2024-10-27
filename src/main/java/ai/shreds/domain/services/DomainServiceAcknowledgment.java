@@ -22,10 +22,11 @@ public class DomainServiceAcknowledgment {
             throw new DomainExceptionAcknowledgmentProcessing("Processed message not found for id: " + acknowledgment.getMessageId());
         }
         message.setDispatchStatus(DomainValueDispatchStatus.DELIVERED);
-        DomainEntityDeliveryDetails deliveryDetails = new DomainEntityDeliveryDetails();
-        deliveryDetails.setDeliveryStatus(acknowledgment.getDeliveryStatus());
-        deliveryDetails.setDeliveryTimestamp(acknowledgment.getDeliveryTimestamp());
-        deliveryDetails.setProviderResponse(acknowledgment.getDetails());
+        DomainEntityDeliveryDetails deliveryDetails = DomainEntityDeliveryDetails.builder()
+                .deliveryStatus(acknowledgment.getDeliveryStatus())
+                .deliveryTimestamp(acknowledgment.getDeliveryTimestamp())
+                .providerResponse(acknowledgment.getDetails())
+                .build();
         message.setDeliveryDetails(deliveryDetails);
         messageRepository.save(message);
     }
@@ -36,10 +37,11 @@ public class DomainServiceAcknowledgment {
             throw new DomainExceptionAcknowledgmentProcessing("Processed message not found for id: " + errorNotification.getMessageId());
         }
         message.setDispatchStatus(DomainValueDispatchStatus.FAILED);
-        DomainEntityDeliveryDetails deliveryDetails = new DomainEntityDeliveryDetails();
-        deliveryDetails.setDeliveryStatus(errorNotification.getDispatchStatus());
-        deliveryDetails.setErrorCode(errorNotification.getErrorCode());
-        deliveryDetails.setErrorMessage(errorNotification.getErrorMessage());
+        DomainEntityDeliveryDetails deliveryDetails = DomainEntityDeliveryDetails.builder()
+                .deliveryStatus(errorNotification.getDispatchStatus())
+                .errorCode(errorNotification.getErrorCode())
+                .errorMessage(errorNotification.getErrorMessage())
+                .build();
         message.setDeliveryDetails(deliveryDetails);
         messageRepository.save(message);
     }

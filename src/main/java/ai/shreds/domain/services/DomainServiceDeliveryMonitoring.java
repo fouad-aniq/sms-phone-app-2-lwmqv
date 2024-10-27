@@ -83,4 +83,17 @@ public class DomainServiceDeliveryMonitoring {
                     pendingCount, sentCount, deliveredCount, failedCount, retryingCount);
             logger.info(report);
         } catch (Exception e) {
-            logger.error("Error occurred while generating dispatch reports.\
+            logger.error("Error occurred while generating dispatch reports.", e);
+        }
+    }
+
+    private long getPendingThreshold() {
+        // Implement the logic to return the pending threshold
+        return 60000; // example: 1 minute
+    }
+
+    private long getStalledThreshold() {
+        // Implement the logic to return the stalled threshold
+        return 300000; // example: 5 minutes
+    }
+}

@@ -34,4 +34,12 @@ public class DomainEntityProcessedMessage {
     private Date dispatchTimestamp;
 
     private DomainEntityDeliveryDetails deliveryDetails;
+
+    public boolean isPreparedForDispatch() {
+        return Boolean.TRUE.equals(preparedForDispatch);
+    }
+
+    public boolean getValidationStatus() {
+        return Boolean.TRUE.equals(validationStatus);
+    }
 }

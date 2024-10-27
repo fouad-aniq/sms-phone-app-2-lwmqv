@@ -27,14 +27,14 @@ public class InfrastructureLoggingInterceptor implements ServerInterceptor {
             ServerCallHandler<ReqT, RespT> next) {
 
         // Log request method and headers
-        logger.info('gRPC Request - Method: {}, Headers: {}', call.getMethodDescriptor().getFullMethodName(), headers);
+        logger.info("gRPC Request - Method: {}, Headers: {}", call.getMethodDescriptor().getFullMethodName(), headers);
 
         // Wrap the ServerCall to log responses
         ServerCall<ReqT, RespT> loggingServerCall = new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
             @Override
             public void sendMessage(RespT message) {
                 // Log response message
-                logger.info('gRPC Response - Method: {}, Message: {}', call.getMethodDescriptor().getFullMethodName(), message);
+                logger.info("gRPC Response - Method: {}, Message: {}", call.getMethodDescriptor().getFullMethodName(), message);
                 super.sendMessage(message);
             }
         };

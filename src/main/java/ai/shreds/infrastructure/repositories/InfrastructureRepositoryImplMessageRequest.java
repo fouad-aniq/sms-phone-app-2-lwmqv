@@ -6,9 +6,10 @@ import ai.shreds.infrastructure.repositories.entities.MessageRequestEntity;
 import ai.shreds.infrastructure.repositories.mappers.MessageRequestMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class InfrastructureRepositoryImplMessageRequest implements DomainPortMessageRequestRepository {
@@ -24,24 +25,25 @@ public class InfrastructureRepositoryImplMessageRequest implements DomainPortMes
     }
 
     @Override
-    public DomainEntityMessageRequest findById(String messageRequestId) {
-        Optional<MessageRequestEntity> entity = messageRequestMongoRepository.findById(messageRequestId);
-        return entity.map(messageRequestMapper::toDomain).orElse(null);
+    public Mono<DomainEntityMessageRequest> findById(String messageRequestId) {
+        return Mono.fromCallable(() -> messageRequestMongoRepository.findById(messageRequestId))
+                .map(optionalEntity -> optionalEntity.map(messageRequestMapper::toDomain).orElse(null));
     }
 
     @Override
-    public void updateStatus(String messageRequestId, String status) {
-        messageRequestMongoRepository.findById(messageRequestId).ifPresent(entity -> {
-            entity.setStatus(status);
-            messageRequestMongoRepository.save(entity);
+    public Mono<Void> updateStatus(String messageRequestId, String status) {
+        return Mono.fromRunnable(() -> {
+            Optional<MessageRequestEntity> optionalEntity = messageRequestMongoRepository.findById(messageRequestId);
+            optionalEntity.ifPresent(entity -> {
+                entity.setStatus(status);
+                messageRequestMongoRepository.save(entity);
+            });
         });
     }
 
     @Override
-    public List<DomainEntityMessageRequest> findAll() {
-        return messageRequestMongoRepository.findAll().stream()
-                .map(messageRequestMapper::toDomain)
-                .collect(Collectors.toList());
+    public Flux<DomainEntityMessageRequest> findAll() {
+        return Flux.fromIterable(messageRequestMongoRepository.findAll())
+                .map(messageRequestMapper::toDomain);
     }
-
 }

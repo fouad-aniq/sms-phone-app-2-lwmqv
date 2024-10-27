@@ -23,10 +23,10 @@ public class ApplicationServiceHandleAcknowledgment implements ApplicationInputP
     @Override
     public void processAcknowledgment(SharedDeliveryAcknowledgmentDTO acknowledgmentDTO) {
         try {
-            DomainValueDeliveryAcknowledgment domainAcknowledgment = mapper.toDomain(acknowledgmentDTO);
+            DomainValueDeliveryAcknowledgment domainAcknowledgment = mapper.toDomainDeliveryAcknowledgment(acknowledgmentDTO);
             domainServiceAcknowledgment.processAcknowledgment(domainAcknowledgment);
         } catch (Exception e) {
-            logger.error('Error processing delivery acknowledgment: ' + e.getMessage(), e);
+            logger.error("Error processing delivery acknowledgment: " + e.getMessage(), e);
             // Consider rethrowing or throwing a custom exception based on business logic
         }
     }
@@ -34,10 +34,10 @@ public class ApplicationServiceHandleAcknowledgment implements ApplicationInputP
     @Override
     public void processErrorNotification(SharedErrorNotificationDTO errorNotificationDTO) {
         try {
-            DomainValueErrorNotification domainErrorNotification = mapper.toDomain(errorNotificationDTO);
+            DomainValueErrorNotification domainErrorNotification = mapper.toDomainErrorNotification(errorNotificationDTO);
             domainServiceAcknowledgment.processErrorNotification(domainErrorNotification);
         } catch (Exception e) {
-            logger.error('Error processing error notification: ' + e.getMessage(), e);
+            logger.error("Error processing error notification: " + e.getMessage(), e);
             // Consider rethrowing or throwing a custom exception based on business logic
         }
     }

@@ -2,9 +2,9 @@ package ai.shreds.infrastructure.external_services;
 
 import ai.shreds.domain.entities.DomainEntityProcessedMessage;
 import ai.shreds.domain.ports.DomainPortSmsGatewayClient;
-import ai.shreds.external.smsgateway.SendMessageRequest;
-import ai.shreds.external.smsgateway.SendMessageResponse;
-import ai.shreds.external.smsgateway.SmsGatewayServiceGrpc;
+import ai.shreds.infrastructure.external_services.generated.SmsGatewayServiceGrpc;
+import ai.shreds.infrastructure.external_services.generated.SendMessageRequest;
+import ai.shreds.infrastructure.external_services.generated.SendMessageResponse;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class InfrastructureClientSmsGateway implements DomainPortSmsGatewayClien
     public void sendMessage(DomainEntityProcessedMessage message) {
         SendMessageRequest request = SendMessageRequest.newBuilder()
                 .setMessageId(message.getId())
-                .setRecipientNumber(message.getRecipientNumber())
+                .setRecipientNumber(getRecipientNumber(message)) // Updated method call
                 .setContent(message.getPersonalizedContent())
                 .build();
 
@@ -56,5 +56,19 @@ public class InfrastructureClientSmsGateway implements DomainPortSmsGatewayClien
      */
     public void sendMessageFallback(DomainEntityProcessedMessage message, Throwable throwable) {
         log.error("Fallback executed for message ID {} after retries. Exception: {}", message.getId(), throwable.getMessage());
+    }
+
+    /**
+     * Retrieves the recipient number from the processed message.
+     * This method assumes the recipient number is stored in the delivery details.
+     *
+     * @param message the processed message
+     * @return the recipient number
+     */
+    private String getRecipientNumber(DomainEntityProcessedMessage message) {
+        if (message.getDeliveryDetails() != null) {
+            return message.getDeliveryDetails().getRecipientNumber();
+        }
+        throw new IllegalArgumentException("Recipient number not found in the message delivery details.");
     }
 }

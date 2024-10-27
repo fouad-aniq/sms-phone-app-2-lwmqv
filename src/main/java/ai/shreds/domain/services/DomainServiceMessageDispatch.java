@@ -60,7 +60,7 @@ public class DomainServiceMessageDispatch {
             message.setDispatchStatus(status);
             messageRepositoryPort.save(message);
         } else {
-            throw new DomainExceptionMessageDispatch('Message not found for ID: ' + messageId);
+            throw new DomainExceptionMessageDispatch("Message not found for ID: " + messageId);
         }
     }
 }

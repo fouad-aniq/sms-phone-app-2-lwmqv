@@ -28,6 +28,6 @@ public enum SharedEnumDispatchStatus {
                 return status;
             }
         }
-        throw new IllegalArgumentException('Unknown dispatch status: ' + value);
+        throw new IllegalArgumentException("Unknown dispatch status: " + value);
     }
 }

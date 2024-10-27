@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public class InfrastructureRepositoryImplDeliveryDetails implements DomainPortDeliveryDetailsRepository {
 
     @Autowired
-    private MongoRepository<DeliveryDetailsEntity, String> deliveryDetailsMongoRepository;
+    private DeliveryDetailsMongoRepository deliveryDetailsMongoRepository;
 
     @Autowired
     private DeliveryDetailsMapper deliveryDetailsMapper;
@@ -28,3 +28,5 @@ public class InfrastructureRepositoryImplDeliveryDetails implements DomainPortDe
         return deliveryDetailsMongoRepository.findById(messageId).map(deliveryDetailsMapper::toDomain).orElse(null);
     }
 }
+
+interface DeliveryDetailsMongoRepository extends MongoRepository<DeliveryDetailsEntity, String> {}

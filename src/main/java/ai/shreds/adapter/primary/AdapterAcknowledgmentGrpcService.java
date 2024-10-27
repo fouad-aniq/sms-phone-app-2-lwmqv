@@ -5,15 +5,17 @@ import ai.shreds.shared.SharedErrorNotificationDTO;
 import ai.shreds.application.ports.ApplicationInputPortHandleAcknowledgment;
 import net.devh.boot.grpc.server.service.GrpcService;
 import io.grpc.stub.StreamObserver;
-import ai.shreds.proto.AcknowledgmentServiceGrpc;
-import ai.shreds.proto.DeliveryAcknowledgmentRequest;
-import ai.shreds.proto.DeliveryAcknowledgmentResponse;
-import ai.shreds.proto.ErrorNotificationRequest;
-import ai.shreds.proto.ErrorNotificationResponse;
+import ai.shreds.infrastructure.external_services.generated.AcknowledgmentServiceGrpc;
+import ai.shreds.infrastructure.external_services.generated.DeliveryAcknowledgmentRequest;
+import ai.shreds.infrastructure.external_services.generated.DeliveryAcknowledgmentResponse;
+import ai.shreds.infrastructure.external_services.generated.ErrorNotificationRequest;
+import ai.shreds.infrastructure.external_services.generated.ErrorNotificationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.Instant;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
+import ai.shreds.shared.SharedEnumDispatchStatus;
 
 @GrpcService
 @RequiredArgsConstructor
@@ -57,10 +59,11 @@ public class AdapterAcknowledgmentGrpcService extends AcknowledgmentServiceGrpc.
 
     private SharedDeliveryAcknowledgmentDTO mapToDeliveryAcknowledgmentDTO(DeliveryAcknowledgmentRequest request) {
         Instant deliveryTimestamp = Instant.ofEpochSecond(request.getDeliveryTimestamp().getSeconds(), request.getDeliveryTimestamp().getNanos());
+        Date deliveryDate = Date.from(deliveryTimestamp); // Convert Instant to Date
         return SharedDeliveryAcknowledgmentDTO.builder()
                 .messageId(request.getMessageId())
-                .dispatchStatus(request.getDispatchStatus())
-                .deliveryTimestamp(deliveryTimestamp)
+                .dispatchStatus(SharedEnumDispatchStatus.fromValue(request.getDispatchStatus()))
+                .deliveryTimestamp(deliveryDate)
                 .details(request.getDetails())
                 .build();
     }
@@ -68,7 +71,7 @@ public class AdapterAcknowledgmentGrpcService extends AcknowledgmentServiceGrpc.
     private SharedErrorNotificationDTO mapToErrorNotificationDTO(ErrorNotificationRequest request) {
         return SharedErrorNotificationDTO.builder()
                 .messageId(request.getMessageId())
-                .dispatchStatus(request.getDispatchStatus())
+                .dispatchStatus(SharedEnumDispatchStatus.fromValue(request.getDispatchStatus()))
                 .errorCode(request.getErrorCode())
                 .errorMessage(request.getErrorMessage())
                 .build();
