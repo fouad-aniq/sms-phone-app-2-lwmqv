@@ -1,6 +1,6 @@
 package ai.shreds.application.ports;
 
-import ai.shreds.shared.SharedSMSGatewayRequest;
+import ai.shreds.shared.dto.SharedSMSGatewayRequest;
 import ai.shreds.shared.SharedSMSGatewayResponse;
 
 /**

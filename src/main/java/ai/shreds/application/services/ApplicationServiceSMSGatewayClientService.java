@@ -1,7 +1,7 @@
 package ai.shreds.application.services;
 
 import ai.shreds.application.ports.ApplicationOutputPortSMSGatewayClientPort;
-import ai.shreds.shared.SharedSMSGatewayRequest;
+import ai.shreds.shared.dto.SharedSMSGatewayRequest; // Corrected import statement
 import ai.shreds.shared.SharedSMSGatewayResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationServiceSMSGatewayClientService implements ApplicationOutputPortSMSGatewayClientPort {
 
-    private static final String SMS_GATEWAY_URL = 'https://sms-gateway-service/api/v1/messages/send';
+    private static final String SMS_GATEWAY_URL = "https://sms-gateway-service/api/v1/messages/send";
 
     private final RestTemplate restTemplate;
 
@@ -34,21 +34,21 @@ public class ApplicationServiceSMSGatewayClientService implements ApplicationOut
             return response.getBody();
         } catch (HttpStatusCodeException ex) {
             SharedSMSGatewayResponse errorResponse = new SharedSMSGatewayResponse();
-            errorResponse.setStatus('failed');
+            errorResponse.setStatus("failed");
             errorResponse.setMessageId(request.getMessageId());
             errorResponse.setDetails(ex.getResponseBodyAsString());
             return errorResponse;
         } catch (ResourceAccessException ex) {
             SharedSMSGatewayResponse errorResponse = new SharedSMSGatewayResponse();
-            errorResponse.setStatus('failed');
+            errorResponse.setStatus("failed");
             errorResponse.setMessageId(request.getMessageId());
-            errorResponse.setDetails('Resource access exception: ' + ex.getMessage());
+            errorResponse.setDetails("Resource access exception: " + ex.getMessage());
             return errorResponse;
         } catch (Exception ex) {
             SharedSMSGatewayResponse errorResponse = new SharedSMSGatewayResponse();
-            errorResponse.setStatus('failed');
+            errorResponse.setStatus("failed");
             errorResponse.setMessageId(request.getMessageId());
-            errorResponse.setDetails('An unexpected error occurred: ' + ex.getMessage());
+            errorResponse.setDetails("An unexpected error occurred: " + ex.getMessage());
             return errorResponse;
         }
     }

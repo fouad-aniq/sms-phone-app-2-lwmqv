@@ -18,10 +18,7 @@ public class InfrastructureUtilRetryPolicy {
     private Double backoffMultiplier;
 
     public SharedUtilRetryPolicy getRetryPolicy() {
-        SharedUtilRetryPolicy retryPolicy = new SharedUtilRetryPolicy();
-        retryPolicy.setMaxAttempts(maxAttempts);
-        retryPolicy.setWaitInterval(Duration.ofMillis(waitIntervalMillis));
-        retryPolicy.setBackoffMultiplier(backoffMultiplier);
+        SharedUtilRetryPolicy retryPolicy = new SharedUtilRetryPolicy(maxAttempts, Duration.ofMillis(waitIntervalMillis), backoffMultiplier);
         return retryPolicy;
     }
 }

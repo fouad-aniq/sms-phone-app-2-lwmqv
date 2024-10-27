@@ -1,7 +1,7 @@
 package ai.shreds.infrastructure.external_services;
 
 import ai.shreds.application.ports.ApplicationOutputPortSMSGatewayClientPort;
-import ai.shreds.shared.SharedSMSGatewayRequest;
+import ai.shreds.shared.dto.SharedSMSGatewayRequest;
 import ai.shreds.shared.SharedSMSGatewayResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +39,7 @@ public class InfrastructureClientSMSGatewayRestClientAdapter implements Applicat
         HttpEntity<SharedSMSGatewayRequest> httpEntity = new HttpEntity<>(request, headers);
 
         try {
-            log.info("Sending message to SMS Gateway: messageId={}, recipient={}", request.getMessageId(), request.getRecipient());
+            log.info("Sending message to SMS Gateway: messageId={}, recipient= {}", request.getMessageId(), request.getRecipient());
             ResponseEntity<SharedSMSGatewayResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, SharedSMSGatewayResponse.class);
             log.info("Received response from SMS Gateway: status={}, messageId={}", responseEntity.getBody().getStatus(), responseEntity.getBody().getMessageId());
             return responseEntity.getBody();

@@ -57,7 +57,7 @@ public class InfrastructureRepositoryImplProcessedMessage implements Application
 
     @Override
     public void updateDeliveryDetails(String id, DomainValueDeliveryDetails details) {
-        Query query = a Query(Criteria.where("id").is(id));
+        Query query = new Query(Criteria.where("id").is(id));
         Update update = new Update()
                 .set("deliveryDetails.providerResponseCode", details.getProviderResponseCode())
                 .set("deliveryDetails.deliveryReceiptDetails", details.getDeliveryReceiptDetails())

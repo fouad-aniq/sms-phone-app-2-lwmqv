@@ -7,9 +7,9 @@ import ai.shreds.domain.entities.DomainEntityProcessedMessage;
 import ai.shreds.domain.value_objects.DomainValueDeliveryDetails;
 import ai.shreds.shared.SharedEnumDeliveryStatus;
 import ai.shreds.shared.SharedErrorDetails;
-import ai.shreds.shared.SharedSMSGatewayRequest;
+import ai.shreds.shared.dto.SharedSMSGatewayRequest;
 import ai.shreds.shared.SharedSMSGatewayResponse;
-import ai.shreds.shared.SharedUtilRetryPolicy;
+import ai.shreds.infrastructure.utils.SharedUtilRetryPolicy;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class ApplicationServiceMessageDispatchService implements ApplicationInpu
                                   multiplierExpression = "#{retryPolicy.backoffMultiplier}"))
     public void dispatchMessage(DomainEntityProcessedMessage processedMessage) {
         try {
-            if (processedMessage.isPreparedForDispatch() && processedMessage.getValidationStatus()) {
+            if (Boolean.TRUE.equals(processedMessage.getPreparedForDispatch()) && Boolean.TRUE.equals(processedMessage.getValidationStatus())) {
                 SharedSMSGatewayRequest request = new SharedSMSGatewayRequest();
                 request.setMessageId(processedMessage.getId());
                 String recipient = processedMessage.getRecipient();
@@ -84,9 +84,7 @@ public class ApplicationServiceMessageDispatchService implements ApplicationInpu
         DomainEntityProcessedMessage processedMessage = messageRepositoryPort.findById(messageId);
         if (processedMessage != null) {
             processedMessage.setDispatchStatus(deliveryStatus);
-            DomainValueDeliveryDetails deliveryDetails = new DomainValueDeliveryDetails();
-            deliveryDetails.setDeliveryReceiptDetails("Delivery acknowledged");
-            deliveryDetails.setProviderResponseCode("200");
+            DomainValueDeliveryDetails deliveryDetails = new DomainValueDeliveryDetails("200", "Delivery acknowledged", null);
             processedMessage.setDeliveryDetails(deliveryDetails);
             processedMessage.setUpdatedAt(LocalDateTime.now());
             messageRepositoryPort.save(processedMessage);
@@ -101,9 +99,8 @@ public class ApplicationServiceMessageDispatchService implements ApplicationInpu
         DomainEntityProcessedMessage processedMessage = messageRepositoryPort.findById(messageId);
         if (processedMessage != null) {
             processedMessage.setDispatchStatus(SharedEnumDeliveryStatus.FAILED);
-            processedMessage.setDeliveryDetails(new DomainValueDeliveryDetails());
-            processedMessage.getDeliveryDetails().setFailureReason(errorDetails.getErrorMessage());
-            processedMessage.getDeliveryDetails().setProviderResponseCode(errorDetails.getErrorCode());
+            DomainValueDeliveryDetails deliveryDetails = new DomainValueDeliveryDetails(errorDetails.getErrorCode(), null, errorDetails.getErrorMessage());
+            processedMessage.setDeliveryDetails(deliveryDetails);
             processedMessage.setUpdatedAt(LocalDateTime.now());
             messageRepositoryPort.save(processedMessage);
             log.info("Message {} marked as failed.", messageId);

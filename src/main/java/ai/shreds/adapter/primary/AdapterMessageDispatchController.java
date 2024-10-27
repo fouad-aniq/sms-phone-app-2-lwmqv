@@ -35,7 +35,6 @@ public class AdapterMessageDispatchController {
     public ResponseEntity<SharedMessageDispatchResponse> dispatchMessage(@Valid @RequestBody @NotNull SharedMessageDispatchRequestParams params) {
         DomainEntityProcessedMessage processedMessage = new DomainEntityProcessedMessage();
         processedMessage.setId(params.getMessageId());
-        processedMessage.setRecipient(params.getRecipient());
         processedMessage.setPersonalizedContent(params.getContent());
         processedMessage.setPreparedForDispatch(true);
         processedMessage.setDispatchStatus(SharedEnumDeliveryStatus.PENDING);
@@ -44,10 +43,11 @@ public class AdapterMessageDispatchController {
 
         messageDispatchUseCase.dispatchMessage(processedMessage);
 
-        SharedMessageDispatchResponse response = new SharedMessageDispatchResponse();
-        response.setStatus("Message dispatched successfully");
-        response.setMessageId(params.getMessageId());
-        response.setDetails("Message has been accepted for processing.");
+        SharedMessageDispatchResponse response = SharedMessageDispatchResponse.builder()
+                .status("Message dispatched successfully")
+                .messageId(params.getMessageId())
+                .details("Message has been accepted for processing.")
+                .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -73,9 +73,7 @@ public class AdapterMessageDispatchController {
 
     @PostMapping("/error-notification")
     public ResponseEntity<SharedErrorNotificationResponse> receiveErrorNotification(@Valid @RequestBody @NotNull SharedErrorNotificationDTO dto) {
-        SharedErrorDetails errorDetails = new SharedErrorDetails();
-        errorDetails.setErrorCode(dto.getErrorCode());
-        errorDetails.setErrorMessage(dto.getErrorMessage());
+        SharedErrorDetails errorDetails = new SharedErrorDetails(dto.getErrorCode(), dto.getErrorMessage());
 
         messageDispatchUseCase.handleErrorNotification(dto.getMessageId(), errorDetails);
 

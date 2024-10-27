@@ -1,7 +1,7 @@
 package ai.shreds.domain.services;
 
 import ai.shreds.domain.entities.DomainEntityProcessedMessage;
-import ai.shreds.domain.entities.SharedEnumDeliveryStatus;
+import ai.shreds.shared.SharedEnumDeliveryStatus;
 import ai.shreds.domain.repositories.ProcessedMessageRepository;
 import ai.shreds.domain.value_objects.DomainValueDeliveryDetails;
 import ai.shreds.domain.exceptions.MessageNotFoundException;
