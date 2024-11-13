@@ -45,7 +45,7 @@ public class AdapterGlobalExceptionHandler {
                     LocalDateTime.now(),
                     status.value(),
                     status.getReasonPhrase(),
-                    'An unexpected error occurred.'
+                    "An unexpected error occurred."
             );
         }
 

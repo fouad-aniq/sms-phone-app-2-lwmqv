@@ -59,7 +59,6 @@ public class InfrastructureScheduleEntity {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = a Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
-
 }

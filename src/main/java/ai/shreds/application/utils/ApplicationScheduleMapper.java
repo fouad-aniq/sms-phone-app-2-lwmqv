@@ -4,8 +4,7 @@ import ai.shreds.shared.SharedScheduleDto;
 import ai.shreds.domain.entities.DomainScheduleEntity;
 import ai.shreds.domain.exceptions.DomainInvalidScheduleException;
 import lombok.extern.slf4j.Slf4j;
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +24,11 @@ public class ApplicationScheduleMapper {
         validateMandatoryFields(scheduleDto);
         validateStatus(scheduleDto.getStatus());
 
-        Timestamp scheduledTime = parseTimestamp(scheduleDto.getScheduledTime(), "scheduledTime");
+        OffsetDateTime scheduledTime = parseOffsetDateTime(scheduleDto.getScheduledTime(), "scheduledTime");
 
-        Timestamp createdAt = scheduleDto.getCreatedAt() != null && !scheduleDto.getCreatedAt().isEmpty() ? parseTimestamp(scheduleDto.getCreatedAt(), "createdAt") : new Timestamp(System.currentTimeMillis());
+        OffsetDateTime createdAt = scheduleDto.getCreatedAt() != null && !scheduleDto.getCreatedAt().isEmpty() ? parseOffsetDateTime(scheduleDto.getCreatedAt(), "createdAt") : OffsetDateTime.now();
 
-        Timestamp updatedAt = scheduleDto.getUpdatedAt() != null && !scheduleDto.getUpdatedAt().isEmpty() ? parseTimestamp(scheduleDto.getUpdatedAt(), "updatedAt") : new Timestamp(System.currentTimeMillis());
+        OffsetDateTime updatedAt = scheduleDto.getUpdatedAt() != null && !scheduleDto.getUpdatedAt().isEmpty() ? parseOffsetDateTime(scheduleDto.getUpdatedAt(), "updatedAt") : OffsetDateTime.now();
 
         UUID scheduleId = scheduleDto.getScheduleId() != null ? scheduleDto.getScheduleId() : UUID.randomUUID();
         String status = scheduleDto.getStatus() != null ? scheduleDto.getStatus().toLowerCase() : "active";
@@ -56,10 +55,10 @@ public class ApplicationScheduleMapper {
         scheduleDto.setScheduleId(schedule.getScheduleId());
         scheduleDto.setMessageContent(schedule.getMessageContent());
         scheduleDto.setRecipient(schedule.getRecipient());
-        scheduleDto.setScheduledTime(formatTimestamp(schedule.getScheduledTime()));
+        scheduleDto.setScheduledTime(formatOffsetDateTime(schedule.getScheduledTime()));
         scheduleDto.setStatus(schedule.getStatus());
-        scheduleDto.setCreatedAt(formatTimestamp(schedule.getCreatedAt()));
-        scheduleDto.setUpdatedAt(formatTimestamp(schedule.getUpdatedAt()));
+        scheduleDto.setCreatedAt(formatOffsetDateTime(schedule.getCreatedAt()));
+        scheduleDto.setUpdatedAt(formatOffsetDateTime(schedule.getUpdatedAt()));
 
         return scheduleDto;
     }
@@ -88,24 +87,23 @@ public class ApplicationScheduleMapper {
         }
     }
 
-    private Timestamp parseTimestamp(String dateTimeStr, String fieldName) throws DomainInvalidScheduleException {
+    private OffsetDateTime parseOffsetDateTime(String dateTimeStr, String fieldName) throws DomainInvalidScheduleException {
         try {
-            Instant instant = Instant.parse(dateTimeStr);
-            Timestamp timestamp = Timestamp.from(instant);
-            if ("scheduledTime".equals(fieldName) && timestamp.before(new Timestamp(System.currentTimeMillis()))) {
+            OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTimeStr);
+            if ("scheduledTime".equals(fieldName) && offsetDateTime.isBefore(OffsetDateTime.now())) {
                 log.error("{} must be in the future", fieldName);
                 throw new DomainInvalidScheduleException(fieldName + " must be in the future");
             }
-            return timestamp;
+            return offsetDateTime;
         } catch (DateTimeParseException e) {
             log.error("Invalid date-time format for {}: {}", fieldName, dateTimeStr);
             throw new DomainInvalidScheduleException("Invalid date-time format for " + fieldName + ": " + dateTimeStr);
         }
     }
 
-    private String formatTimestamp(Timestamp timestamp) {
-        if (timestamp != null) {
-            return timestamp.toInstant().toString();
+    private String formatOffsetDateTime(OffsetDateTime offsetDateTime) {
+        if (offsetDateTime != null) {
+            return offsetDateTime.toString();
         } else {
             return null;
         }

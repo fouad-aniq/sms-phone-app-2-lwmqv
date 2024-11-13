@@ -4,7 +4,7 @@ import ai.shreds.domain.entities.DomainScheduleEntity;
 import ai.shreds.infrastructure.entities.InfrastructureScheduleEntity;
 import ai.shreds.infrastructure.entities.InfrastructureCacheScheduleEntity;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class InfrastructureScheduleMapper {
 
@@ -16,10 +16,10 @@ public class InfrastructureScheduleMapper {
         databaseEntity.setScheduleId(schedule.getScheduleId());
         databaseEntity.setMessageContent(schedule.getMessageContent());
         databaseEntity.setRecipient(schedule.getRecipient());
-        databaseEntity.setScheduledTime(Timestamp.valueOf(schedule.getScheduledTime()));
+        databaseEntity.setScheduledTime(Timestamp.from(schedule.getScheduledTime().toInstant()));
         databaseEntity.setStatus(schedule.getStatus());
-        databaseEntity.setCreatedAt(Timestamp.valueOf(schedule.getCreatedAt()));
-        databaseEntity.setUpdatedAt(Timestamp.valueOf(schedule.getUpdatedAt()));
+        databaseEntity.setCreatedAt(Timestamp.from(schedule.getCreatedAt().toInstant()));
+        databaseEntity.setUpdatedAt(Timestamp.from(schedule.getUpdatedAt().toInstant()));
         return databaseEntity;
     }
 
@@ -31,10 +31,10 @@ public class InfrastructureScheduleMapper {
         schedule.setScheduleId(databaseEntity.getScheduleId());
         schedule.setMessageContent(databaseEntity.getMessageContent());
         schedule.setRecipient(databaseEntity.getRecipient());
-        schedule.setScheduledTime(databaseEntity.getScheduledTime().toLocalDateTime());
+        schedule.setScheduledTime(databaseEntity.getScheduledTime().toInstant().atOffset(ZoneOffset.UTC));
         schedule.setStatus(databaseEntity.getStatus());
-        schedule.setCreatedAt(databaseEntity.getCreatedAt().toLocalDateTime());
-        schedule.setUpdatedAt(databaseEntity.getUpdatedAt().toLocalDateTime());
+        schedule.setCreatedAt(databaseEntity.getCreatedAt().toInstant().atOffset(ZoneOffset.UTC));
+        schedule.setUpdatedAt(databaseEntity.getUpdatedAt().toInstant().atOffset(ZoneOffset.UTC));
         return schedule;
     }
 
@@ -46,10 +46,10 @@ public class InfrastructureScheduleMapper {
         cacheEntity.setScheduleId(schedule.getScheduleId());
         cacheEntity.setMessageContent(schedule.getMessageContent());
         cacheEntity.setRecipient(schedule.getRecipient());
-        cacheEntity.setScheduledTime(Timestamp.valueOf(schedule.getScheduledTime()));
+        cacheEntity.setScheduledTime(schedule.getScheduledTime());
         cacheEntity.setStatus(schedule.getStatus());
-        cacheEntity.setCreatedAt(Timestamp.valueOf(schedule.getCreatedAt()));
-        cacheEntity.setUpdatedAt(Timestamp.valueOf(schedule.getUpdatedAt()));
+        cacheEntity.setCreatedAt(schedule.getCreatedAt());
+        cacheEntity.setUpdatedAt(schedule.getUpdatedAt());
         return cacheEntity;
     }
 
@@ -61,10 +61,10 @@ public class InfrastructureScheduleMapper {
         schedule.setScheduleId(cacheEntity.getScheduleId());
         schedule.setMessageContent(cacheEntity.getMessageContent());
         schedule.setRecipient(cacheEntity.getRecipient());
-        schedule.setScheduledTime(cacheEntity.getScheduledTime().toLocalDateTime());
+        schedule.setScheduledTime(cacheEntity.getScheduledTime().toInstant().atOffset(ZoneOffset.UTC));
         schedule.setStatus(cacheEntity.getStatus());
-        schedule.setCreatedAt(cacheEntity.getCreatedAt().toLocalDateTime());
-        schedule.setUpdatedAt(cacheEntity.getUpdatedAt().toLocalDateTime());
+        schedule.setCreatedAt(cacheEntity.getCreatedAt().toInstant().atOffset(ZoneOffset.UTC));
+        schedule.setUpdatedAt(cacheEntity.getUpdatedAt().toInstant().atOffset(ZoneOffset.UTC));
         return schedule;
     }
 }

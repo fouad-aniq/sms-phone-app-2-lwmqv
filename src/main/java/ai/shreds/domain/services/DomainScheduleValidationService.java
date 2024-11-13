@@ -3,64 +3,50 @@ package ai.shreds.domain.services;
 import ai.shreds.domain.entities.DomainScheduleEntity;
 import ai.shreds.domain.exceptions.DomainInvalidScheduleException;
 import ai.shreds.domain.ports.DomainScheduleValidationServicePort;
-
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.regex.Pattern;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 public class DomainScheduleValidationService implements DomainScheduleValidationServicePort {
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-            Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern PHONE_PATTERN = Pattern.compile(
-            "^\\+?[1-9]\\d{1,14}$");
+    private static final List<String> VALID_STATUSES = Arrays.asList("active", "paused", "deleted");
 
     @Override
     public void validateSchedule(DomainScheduleEntity schedule) throws DomainInvalidScheduleException {
-        StringBuilder errors = new StringBuilder();
-
-        if (schedule.getMessageContent() == null || schedule.getMessageContent().trim().isEmpty()) {
-            errors.append("messageContent is mandatory and cannot be empty.\n");
+        if (schedule == null) {
+            throw new DomainInvalidScheduleException("Schedule cannot be null.");
         }
 
-        if (schedule.getRecipient() == null || schedule.getRecipient().trim().isEmpty()) {
-            errors.append("recipient is mandatory and cannot be empty.\n");
-        } else {
-            String recipient = schedule.getRecipient().trim();
-            if (!isValidEmail(recipient) && !isValidPhoneNumber(recipient)) {
-                errors.append("recipient must be a valid email or phone number.\n");
-            }
+        OffsetDateTime scheduledTimeStamp = schedule.getScheduledTime();
+        if (scheduledTimeStamp == null) {
+            throw new DomainInvalidScheduleException("Scheduled time cannot be null.");
+        }
+        Instant scheduledInstant = scheduledTimeStamp.toInstant();
+        Instant nowInstant = Instant.now();
+        if (!scheduledInstant.isAfter(nowInstant)) {
+            throw new DomainInvalidScheduleException("Scheduled time must be in the future.");
         }
 
-        if (schedule.getScheduledTime() == null) {
-            errors.append("scheduledTime is mandatory and must be provided.\n");
-        } else {
-            Timestamp now = Timestamp.from(Instant.now());
-            if (!schedule.getScheduledTime().after(now)) {
-                errors.append("scheduledTime must be a future timestamp.\n");
-            }
+        String status = schedule.getStatus();
+        if (status == null || status.trim().isEmpty()) {
+            throw new DomainInvalidScheduleException("Status cannot be null or empty.");
+        }
+        if (!VALID_STATUSES.contains(status.toLowerCase())) {
+            throw new DomainInvalidScheduleException("Invalid status value.");
         }
 
-        if (schedule.getStatus() != null) {
-            String status = schedule.getStatus().trim().toLowerCase();
-            if (!status.equals("active") && !status.equals("paused") && !status.equals("deleted")) {
-                errors.append("status must be one of 'active', 'paused', or 'deleted'.\n");
-            }
+        String messageContent = schedule.getMessageContent();
+        if (messageContent == null || messageContent.trim().isEmpty()) {
+            throw new DomainInvalidScheduleException("Message content cannot be null or empty.");
         }
 
-        if (errors.length() > 0) {
-            throw new DomainInvalidScheduleException(errors.toString().trim());
+        String recipient = schedule.getRecipient();
+        if (recipient == null || recipient.trim().isEmpty()) {
+            throw new DomainInvalidScheduleException("Recipient cannot be null or empty.");
+        }
+        if (!recipient.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}")) {
+            throw new DomainInvalidScheduleException("Recipient must be a valid email.");
         }
     }
-
-    private boolean isValidEmail(String email) {
-        return EMAIL_PATTERN.matcher(email).matches();
-    }
-
-    private boolean isValidPhoneNumber(String phone) {
-        return PHONE_PATTERN.matcher(phone).matches();
-    }
-
 }

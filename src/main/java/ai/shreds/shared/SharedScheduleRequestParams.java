@@ -20,7 +20,7 @@ public class SharedScheduleRequestParams {
 
     @NotEmpty(message = "Recipient must not be empty.")
     @Pattern(
-        regexp = "^(\+\d{1,3}[- ]?)?\d{10}$|^\S+@\S+\.\S+$",
+        regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$|^\\S+@\\S+\\.\\S+$",
         message = "Recipient must be a valid email address or phone number."
     )
     private String recipient;
