@@ -3,7 +3,9 @@ package ai.shreds.shared;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.AssertTrue;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -18,7 +20,7 @@ public class SharedScheduleRequestParams {
 
     @NotEmpty(message = "Recipient must not be empty.")
     @Pattern(
-        regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$|^\\S+@\\S+\\.\\S+$",
+        regexp = "^(\+\d{1,3}[- ]?)?\d{10}$|^\S+@\S+\.\S+$",
         message = "Recipient must be a valid email address or phone number."
     )
     private String recipient;

@@ -22,8 +22,9 @@ public interface DomainScheduleRepositoryPort {
      *
      * @param scheduleId the UUID of the schedule entity
      * @return the found schedule entity
+     * @throws DomainScheduleNotFoundException if the schedule is not found
      */
-    DomainScheduleEntity findById(UUID scheduleId);
+    DomainScheduleEntity findById(UUID scheduleId) throws DomainScheduleNotFoundException;
 
     /**
      * Removes a schedule entity by its UUID from the database.
@@ -31,8 +32,9 @@ public interface DomainScheduleRepositoryPort {
      * Manages transactions and exception propagation as per technical specifications.
      *
      * @param scheduleId the UUID of the schedule entity to be deleted
+     * @throws DomainScheduleNotFoundException if the schedule is not found
      */
-    void deleteById(UUID scheduleId);
+    void deleteById(UUID scheduleId) throws DomainScheduleNotFoundException;
 
     /**
      * Checks if a schedule entity exists in the database by its UUID.

@@ -1,5 +1,8 @@
 package ai.shreds.infrastructure.exceptions;
 
+import java.lang.Exception;
+import java.lang.Throwable;
+
 /**
  * Exception class to encapsulate data access errors occurring in the ScheduleRepository implementation.
  * This exception is thrown when database access operations fail during schedule persistence, retrieval, or deletion.

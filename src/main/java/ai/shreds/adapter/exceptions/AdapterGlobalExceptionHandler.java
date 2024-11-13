@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class AdapterGlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity handleException(Exception exception) {
+    public ResponseEntity<Object> handleException(Exception exception) {
         HttpStatus status;
         ErrorResponse errorResponse;
 
@@ -45,7 +45,7 @@ public class AdapterGlobalExceptionHandler {
                     LocalDateTime.now(),
                     status.value(),
                     status.getReasonPhrase(),
-                    "An unexpected error occurred."
+                    'An unexpected error occurred.'
             );
         }
 
@@ -64,8 +64,6 @@ public class AdapterGlobalExceptionHandler {
             this.error = error;
             this.message = message;
         }
-
-        // Getters and setters
 
         public LocalDateTime getTimestamp() {
             return timestamp;

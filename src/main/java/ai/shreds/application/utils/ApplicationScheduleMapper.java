@@ -4,7 +4,6 @@ import ai.shreds.shared.SharedScheduleDto;
 import ai.shreds.domain.entities.DomainScheduleEntity;
 import ai.shreds.domain.exceptions.DomainInvalidScheduleException;
 import lombok.extern.slf4j.Slf4j;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -28,19 +27,9 @@ public class ApplicationScheduleMapper {
 
         Timestamp scheduledTime = parseTimestamp(scheduleDto.getScheduledTime(), "scheduledTime");
 
-        Timestamp createdAt;
-        if (scheduleDto.getCreatedAt() != null && !scheduleDto.getCreatedAt().isEmpty()) {
-            createdAt = parseTimestamp(scheduleDto.getCreatedAt(), "createdAt");
-        } else {
-            createdAt = new Timestamp(System.currentTimeMillis());
-        }
+        Timestamp createdAt = scheduleDto.getCreatedAt() != null && !scheduleDto.getCreatedAt().isEmpty() ? parseTimestamp(scheduleDto.getCreatedAt(), "createdAt") : new Timestamp(System.currentTimeMillis());
 
-        Timestamp updatedAt;
-        if (scheduleDto.getUpdatedAt() != null && !scheduleDto.getUpdatedAt().isEmpty()) {
-            updatedAt = parseTimestamp(scheduleDto.getUpdatedAt(), "updatedAt");
-        } else {
-            updatedAt = new Timestamp(System.currentTimeMillis());
-        }
+        Timestamp updatedAt = scheduleDto.getUpdatedAt() != null && !scheduleDto.getUpdatedAt().isEmpty() ? parseTimestamp(scheduleDto.getUpdatedAt(), "updatedAt") : new Timestamp(System.currentTimeMillis());
 
         UUID scheduleId = scheduleDto.getScheduleId() != null ? scheduleDto.getScheduleId() : UUID.randomUUID();
         String status = scheduleDto.getStatus() != null ? scheduleDto.getStatus().toLowerCase() : "active";
@@ -104,8 +93,8 @@ public class ApplicationScheduleMapper {
             Instant instant = Instant.parse(dateTimeStr);
             Timestamp timestamp = Timestamp.from(instant);
             if ("scheduledTime".equals(fieldName) && timestamp.before(new Timestamp(System.currentTimeMillis()))) {
-                log.error("'{}' must be in the future", fieldName);
-                throw new DomainInvalidScheduleException("'" + fieldName + "' must be in the future");
+                log.error("{} must be in the future", fieldName);
+                throw new DomainInvalidScheduleException(fieldName + " must be in the future");
             }
             return timestamp;
         } catch (DateTimeParseException e) {

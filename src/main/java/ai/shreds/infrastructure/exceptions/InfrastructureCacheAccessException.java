@@ -1,12 +1,13 @@
 package ai.shreds.infrastructure.exceptions;
 
+import java.io.Serial;
+
 /**
  * Exception thrown when there is a failure accessing the cache in the infrastructure layer.
  */
 public class InfrastructureCacheAccessException extends Exception {
 
-    public String message;
-
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -16,7 +17,6 @@ public class InfrastructureCacheAccessException extends Exception {
      */
     public InfrastructureCacheAccessException(String message) {
         super(message);
-        this.message = message;
     }
 
     /**
@@ -27,6 +27,5 @@ public class InfrastructureCacheAccessException extends Exception {
      */
     public InfrastructureCacheAccessException(String message, Throwable cause) {
         super(message, cause);
-        this.message = message;
     }
 }

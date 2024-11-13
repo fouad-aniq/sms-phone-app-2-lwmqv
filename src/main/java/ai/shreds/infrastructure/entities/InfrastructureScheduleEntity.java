@@ -3,7 +3,6 @@ package ai.shreds.infrastructure.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -60,7 +59,7 @@ public class InfrastructureScheduleEntity {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = a Timestamp(System.currentTimeMillis());
     }
 
 }
