@@ -19,7 +19,6 @@ public class InfrastructureRepositoryImplValidationErrorRepository implements Do
     @Override
     public void save(DomainEntityValidationError validationError) {
         try {
-            // Ensure standardized error codes and messages are used
             if (validationError.getErrorCode() == null || validationError.getErrorMessage() == null) {
                 throw new IllegalArgumentException("Error code and message must be provided.");
             }

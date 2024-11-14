@@ -4,7 +4,6 @@ import ai.shreds.application.ports.ApplicationOutputPortAcknowledgmentPort;
 import ai.shreds.shared.SharedResponseDTO;
 import ai.shreds.shared.SharedValidationErrorDTO;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,6 @@ public class ApplicationServiceAcknowledgmentService implements ApplicationOutpu
         if (errors != null && !errors.isEmpty()) {
             response.setStatus(STATUS_BAD_REQUEST);
             response.setMessage(MESSAGE_VALIDATION_FAILED);
-            // Extract error messages from SharedValidationErrorDTO list
             List<String> errorMessages = errors.stream()
                     .map(SharedValidationErrorDTO::getErrorMessage)
                     .collect(Collectors.toList());

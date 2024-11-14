@@ -24,7 +24,7 @@ public class SharedSMSMessageDTO {
     @NotNull(message = "Recipient number is required")
     @Pattern(
         regexp = "\\+[1-9]\\d{1,14}$",
-        message = "Recipient number must be a valid international number starting with '+'"
+        message = "Recipient number must be a valid international number starting with +"
     )
     @JsonProperty("recipientNumber")
     private String recipientNumber;

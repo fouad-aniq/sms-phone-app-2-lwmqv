@@ -1,12 +1,12 @@
 package ai.shreds.domain.value_objects;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DomainValueContentValue {
 
@@ -23,10 +23,7 @@ public class DomainValueContentValue {
     }
 
     public boolean isValid() {
-        if (content == null) {
-            return false;
-        }
-        if (content.length() > 160) {
+        if (content == null || content.length() > 160) {
             return false;
         }
         String contentLowerCase = content.toLowerCase();

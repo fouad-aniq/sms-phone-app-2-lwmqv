@@ -2,7 +2,6 @@ package ai.shreds.domain.services;
 
 import ai.shreds.domain.entities.DomainEntitySMSMessage;
 import ai.shreds.domain.entities.DomainEntityValidationError;
-import ai.shreds.domain.exceptions.DomainExceptionValidationException;
 import ai.shreds.domain.ports.DomainPortValidationErrorRepositoryPort;
 import ai.shreds.shared.SharedEnumMessageStatusEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -32,7 +31,6 @@ public class DomainServiceMessageValidationComponent {
         List<DomainEntityValidationError> validationErrors = new ArrayList<>();
         currentMessageId = message.getMessageId();
 
-        // Check required fields
         if (currentMessageId == null || currentMessageId.isEmpty()) {
             validationErrors.add(createValidationError("ERR001", "Message ID is required."));
         }
@@ -43,21 +41,14 @@ public class DomainServiceMessageValidationComponent {
             validationErrors.add(createValidationError("ERR003", "Message content is required."));
         }
 
-        // Validate recipient number
         validationErrors.addAll(validateRecipientNumber(message.getRecipientNumber()));
-
-        // Validate content
         validationErrors.addAll(validateContent(message.getContent()));
-
-        // Validate metadata
         validationErrors.addAll(validateMetadata(message.getMetadata()));
 
-        // Set message status
         if (validationErrors.isEmpty()) {
             message.setStatus(SharedEnumMessageStatusEnum.VALIDATED);
         } else {
             message.setStatus(SharedEnumMessageStatusEnum.FAILED);
-            // Save validation errors
             for (DomainEntityValidationError error : validationErrors) {
                 validationErrorRepository.save(error);
             }
@@ -84,7 +75,7 @@ public class DomainServiceMessageValidationComponent {
     }
 
     public List<DomainEntityValidationError> validateContent(String content) {
-        List<DomainEntityValidationError> errors = new ArrayList<>();
+        List<DomainEntityValidationError> errors are new ArrayList<>();
         if (content == null || content.isEmpty()) {
             errors.add(createValidationError("ERR003", "Message content is required."));
             return errors;

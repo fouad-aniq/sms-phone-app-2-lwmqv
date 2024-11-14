@@ -3,30 +3,34 @@ package ai.shreds.domain.value_objects;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DomainValuePhoneNumberValue {
 
-    private final String countryCode;
-    private final String nationalNumber;
-    private final Phonenumber.PhoneNumber phoneNumber;
+    private static final Logger logger = LoggerFactory.getLogger(DomainValuePhoneNumberValue.class);
+
+    private String countryCode;
+    private String nationalNumber;
+    private Phonenumber.PhoneNumber phoneNumber;
 
     public DomainValuePhoneNumberValue(String phoneNumberStr) {
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-        String tempCountryCode = null;
-        String tempNationalNumber = null;
-        Phonenumber.PhoneNumber tempPhoneNumber = null;
         try {
-            tempPhoneNumber = phoneUtil.parse(phoneNumberStr, null);
-            if (phoneUtil.isValidNumber(tempPhoneNumber)) {
-                tempCountryCode = String.valueOf(tempPhoneNumber.getCountryCode());
-                tempNationalNumber = String.valueOf(tempPhoneNumber.getNationalNumber());
+            this.phoneNumber = phoneUtil.parse(phoneNumberStr, null);
+            if (phoneUtil.isValidNumber(this.phoneNumber)) {
+                this.countryCode = String.valueOf(this.phoneNumber.getCountryCode());
+                this.nationalNumber = String.valueOf(this.phoneNumber.getNationalNumber());
+            } else {
+                this.countryCode = null;
+                this.nationalNumber = null;
             }
         } catch (NumberParseException e) {
-            // Handle exception accordingly (e.g., log error)
+            logger.error("Error parsing phone number: " + e.getMessage(), e);
+            this.countryCode = null;
+            this.nationalNumber = null;
+            this.phoneNumber = null;
         }
-        this.countryCode = tempCountryCode;
-        this.nationalNumber = tempNationalNumber;
-        this.phoneNumber = tempPhoneNumber;
     }
 
     public boolean isValid() {

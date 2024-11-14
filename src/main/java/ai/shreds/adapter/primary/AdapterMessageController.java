@@ -7,7 +7,6 @@ import ai.shreds.adapter.exceptions.AdapterException;
 import ai.shreds.adapter.exceptions.AdapterExceptionValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -50,7 +49,7 @@ public class AdapterMessageController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public SharedResponseDTO handleGeneralException(Exception ex) {
-        SharedResponseDTO response = new SharedResponseDTO();
+        SharedResponseDTO response = a new SharedResponseDTO();
         response.setStatus("FAILURE");
         response.setMessage("Internal Server Error");
         response.setErrors(List.of("An unexpected error occurred."));

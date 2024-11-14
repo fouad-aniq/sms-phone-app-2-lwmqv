@@ -1,4 +1,4 @@
-package ai.shreds.domain.exceptions;
+package domain.exceptions;
 
 public class DomainExceptionValidationException extends RuntimeException {
 
