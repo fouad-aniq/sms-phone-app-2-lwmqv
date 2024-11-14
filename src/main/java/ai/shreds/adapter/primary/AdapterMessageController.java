@@ -27,33 +27,21 @@ public class AdapterMessageController {
     @ExceptionHandler(AdapterExceptionValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public SharedResponseDTO handleValidationException(AdapterExceptionValidationException ex) {
-        SharedResponseDTO response = new SharedResponseDTO();
-        response.setStatus("FAILURE");
-        response.setMessage("Validation Error");
-        response.setErrors(List.of(ex.getMessage()));
-        response.setMessageId(null);
+        SharedResponseDTO response = SharedResponseDTO.error(null, "Validation Error", List.of(ex.getMessage()));
         return response;
     }
 
     @ExceptionHandler(AdapterException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public SharedResponseDTO handleAdapterException(AdapterException ex) {
-        SharedResponseDTO response = new SharedResponseDTO();
-        response.setStatus("FAILURE");
-        response.setMessage("Processing Error");
-        response.setErrors(List.of("An internal processing error occurred."));
-        response.setMessageId(null);
+        SharedResponseDTO response = SharedResponseDTO.error(null, "Processing Error", List.of("An internal processing error occurred."));
         return response;
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public SharedResponseDTO handleGeneralException(Exception ex) {
-        SharedResponseDTO response = a new SharedResponseDTO();
-        response.setStatus("FAILURE");
-        response.setMessage("Internal Server Error");
-        response.setErrors(List.of("An unexpected error occurred."));
-        response.setMessageId(null);
+        SharedResponseDTO response = SharedResponseDTO.error(null, "Internal Server Error", List.of("An unexpected error occurred."));
         return response;
     }
 }

@@ -6,6 +6,7 @@ import ai.shreds.application.ports.ApplicationOutputPortAcknowledgmentPort;
 import ai.shreds.application.ports.ApplicationOutputPortMessagePreprocessingPort;
 import ai.shreds.application.ports.ApplicationOutputPortMessageValidationPort;
 import ai.shreds.domain.entities.DomainEntitySMSMessage;
+import ai.shreds.domain.entities.DomainEntityValidationError;
 import ai.shreds.domain.ports.DomainPortSMSMessageRepositoryPort;
 import ai.shreds.shared.SharedEnumMessageStatusEnum;
 import ai.shreds.shared.SharedResponseDTO;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service

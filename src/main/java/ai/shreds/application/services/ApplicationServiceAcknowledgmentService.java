@@ -20,30 +20,18 @@ public class ApplicationServiceAcknowledgmentService implements ApplicationOutpu
 
     @Override
     public SharedResponseDTO createSuccessResponse(String messageId) {
-        SharedResponseDTO response = new SharedResponseDTO();
-        response.setStatus(STATUS_SUCCESS);
-        response.setMessage(MESSAGE_SUCCESS);
-        response.setMessageId(messageId);
-        response.setErrors(null);
-        return response;
+        return SharedResponseDTO.success(messageId, MESSAGE_SUCCESS);
     }
 
     @Override
     public SharedResponseDTO createErrorResponse(String messageId, List<SharedValidationErrorDTO> errors) {
-        SharedResponseDTO response = new SharedResponseDTO();
-        response.setMessageId(messageId);
         if (errors != null && !errors.isEmpty()) {
-            response.setStatus(STATUS_BAD_REQUEST);
-            response.setMessage(MESSAGE_VALIDATION_FAILED);
             List<String> errorMessages = errors.stream()
                     .map(SharedValidationErrorDTO::getErrorMessage)
                     .collect(Collectors.toList());
-            response.setErrors(errorMessages);
+            return SharedResponseDTO.error(messageId, MESSAGE_VALIDATION_FAILED, errorMessages);
         } else {
-            response.setStatus(STATUS_INTERNAL_SERVER_ERROR);
-            response.setMessage(MESSAGE_INTERNAL_ERROR);
-            response.setErrors(null);
+            return SharedResponseDTO.error(messageId, MESSAGE_INTERNAL_ERROR, null);
         }
-        return response;
     }
 }

@@ -21,6 +21,7 @@ public class SharedResponseDTO {
                 .status("SUCCESS")
                 .message(message)
                 .messageId(messageId)
+                .errors(null) // Ensure errors are null in success case
                 .build();
     }
 

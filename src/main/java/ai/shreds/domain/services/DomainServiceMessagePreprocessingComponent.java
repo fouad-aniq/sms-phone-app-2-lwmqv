@@ -1,7 +1,7 @@
 package ai.shreds.domain.services;
 
 import ai.shreds.domain.entities.DomainEntitySMSMessage;
-import ai.shreds.domain.exceptions.DomainExceptionValidationException;
+import domain.exceptions.DomainExceptionValidationException;
 import ai.shreds.shared.SharedEnumMessageStatusEnum;
 import ai.shreds.shared.SharedUtilDateUtil;
 import java.sql.Timestamp;
