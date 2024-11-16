@@ -1,18 +1,29 @@
 package ai.shreds.application.ports;
 
 import ai.shreds.domain.entities.DomainEntitySMSMessage;
+import ai.shreds.domain.entities.SharedEnumMessageStatusEnum;
+import ai.shreds.domain.services.DomainServiceMessagePreprocessingComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
- * Port interface for preprocessing SMS messages before routing.
- * Prepares validated messages by formatting and enhancing them with necessary metadata.
+ * Implementation of ApplicationOutputPortMessagePreprocessingPort.
  */
-public interface ApplicationOutputPortMessagePreprocessingPort {
-    /**
-     * Prepares an SMS message for routing.
-     * Formats the message content and adds necessary metadata.
-     * Updates the message status after preprocessing.
-     *
-     * @param message the SMS message to preprocess
-     */
-    void prepareForRouting(DomainEntitySMSMessage message);
+@Service
+public class ApplicationOutputPortMessagePreprocessingPortImpl implements ApplicationOutputPortMessagePreprocessingPort {
+
+    @Autowired
+    private DomainServiceMessagePreprocessingComponent messagePreprocessingComponent;
+
+    @Override
+    public void prepareForRouting(DomainEntitySMSMessage message) {
+        // Enhance the message with additional metadata required for routing
+        message.getMetadata().put("routingKey", "exampleRoutingKey");
+
+        // Update the message's status to reflect preprocessing
+        message.setStatus(SharedEnumMessageStatusEnum.VALIDATED);
+
+        // Format the message content as needed for downstream processing
+        messagePreprocessingComponent.formatMessageContent(message);
+    }
 }

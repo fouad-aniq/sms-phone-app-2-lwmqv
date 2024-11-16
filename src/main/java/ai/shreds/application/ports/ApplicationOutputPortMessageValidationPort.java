@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface ApplicationOutputPortMessageValidationPort {
     /**
-     * Validates the provided SMS message according to business rules.
+     * Validates the given SMS message according to business rules.
      *
      * @param message the SMS message to validate
-     * @return a list of validation errors found; empty if no errors
+     * @return a list of validation errors if any issues are found
      */
     List<SharedValidationErrorDTO> validateMessage(DomainEntitySMSMessage message);
 }

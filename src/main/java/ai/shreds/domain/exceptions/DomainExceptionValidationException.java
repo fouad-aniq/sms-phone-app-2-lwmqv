@@ -1,25 +1,20 @@
-package ai.shreds.domain.exceptions;
+package domain.exceptions;
 
-/**
- * Exception thrown when validation errors occur within the domain layer.
- * This exception adheres to the standardized error reporting mechanism.
- */
-public class DomainExceptionValidationException extends Exception {
+public class DomainExceptionValidationException extends RuntimeException {
 
-    /**
-     * Constructs a new DomainExceptionValidationException with the specified detail message.
-     * @param message the detail message.
-     */
+    private String errorCode;
+
     public DomainExceptionValidationException(String message) {
         super(message);
+        this.errorCode = "VALIDATION_ERROR";
     }
 
-    /**
-     * Constructs a new DomainExceptionValidationException with the specified detail message and cause.
-     * @param message the detail message.
-     * @param cause the cause of the exception.
-     */
     public DomainExceptionValidationException(String message, Throwable cause) {
         super(message, cause);
+        this.errorCode = "VALIDATION_ERROR";
+    }
+
+    public String getErrorCode() {
+        return errorCode;
     }
 }

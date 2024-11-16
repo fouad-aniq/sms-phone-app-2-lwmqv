@@ -2,21 +2,10 @@ package ai.shreds.shared;
 
 /**
  * Enum representing the possible statuses of an SMS message.
+ * This enum is used throughout the application to represent the current state of a message as it moves through the processing pipeline.
  */
 public enum SharedEnumMessageStatusEnum {
-
-    /**
-     * The message has been received but not yet processed.
-     */
     RECEIVED,
-
-    /**
-     * The message has passed validation.
-     */
     VALIDATED,
-
-    /**
-     * The message has failed validation.
-     */
-    FAILED
+    FAILED;
 }

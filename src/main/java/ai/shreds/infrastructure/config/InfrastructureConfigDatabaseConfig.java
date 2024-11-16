@@ -1,71 +1,64 @@
 package ai.shreds.infrastructure.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import javax.persistence.EntityManagerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
 public class InfrastructureConfigDatabaseConfig {
 
-    private static InfrastructureConfigDatabaseConfig instance;
+    @Value("${spring.datasource.url}")
+    private String databaseUrl;
 
-    private InfrastructureConfigDatabaseConfig() {
-        // Private constructor to prevent instantiation
-    }
+    @Value("${spring.datasource.driver-class-name}")
+    private String databaseDriverClass;
 
-    public static synchronized InfrastructureConfigDatabaseConfig getInstance() {
-        if (instance == null) {
-            instance = new InfrastructureConfigDatabaseConfig();
-        }
-        return instance;
-    }
+    @Value("${spring.datasource.username}")
+    private String databaseUsername;
+
+    @Value("${spring.datasource.password}")
+    private String databasePassword;
+
+    @Value("${hibernate.dialect}")
+    private String hibernateDialect;
+
+    @Value("${hibernate.hbm2ddl.auto}")
+    private String hibernateHbm2ddlAuto;
 
     @Bean
     public DataSource configureDataSource() {
-        return DataSourceBuilder.create()
-                .url("jdbc:mysql://localhost:3306/mydb")
-                .username("user")
-                .password("password")
-                .driverClassName("com.mysql.cj.jdbc.Driver")
-                .build();
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(databaseDriverClass);
+        dataSource.setUrl(databaseUrl);
+        dataSource.setUsername(databaseUsername);
+        dataSource.setPassword(databasePassword);
+        return dataSource;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean configureEntityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("ai.shreds.domain.entities");
+    public EntityManagerFactory configureEntityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactory.setDataSource(configureDataSource());
+        entityManagerFactory.setPackagesToScan("ai.shreds.domain.entities");
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
 
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(additionalProperties());
+        Properties jpaProperties = new Properties();
+        jpaProperties.put("hibernate.hbm2ddl.auto", hibernateHbm2ddlAuto);
+        jpaProperties.put("hibernate.dialect", hibernateDialect);
 
-        return em;
-    }
+        entityManagerFactory.setJpaProperties(jpaProperties);
 
-    @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(emf);
-
-        return transactionManager;
-    }
-
-    private Properties additionalProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        properties.setProperty("hibernate.show_sql", "true");
-        return properties;
+        entityManagerFactory.afterPropertiesSet();
+        return entityManagerFactory.getObject();
     }
 }

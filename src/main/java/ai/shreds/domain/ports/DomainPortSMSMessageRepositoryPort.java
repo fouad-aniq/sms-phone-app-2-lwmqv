@@ -2,22 +2,27 @@ package ai.shreds.domain.ports;
 
 import ai.shreds.domain.entities.DomainEntitySMSMessage;
 import ai.shreds.shared.SharedEnumMessageStatusEnum;
+
 import java.util.Optional;
 
+/**
+ * Interface for managing database operations for SMSMessage entities.
+ * Provides methods to save, retrieve, and update SMSMessage entities.
+ */
 public interface DomainPortSMSMessageRepositoryPort {
 
     /**
-     * Persists the given SMSMessage entity to the database.
-     * Must ensure that every SMSMessage has a unique messageId to prevent duplication and ensure traceability.
-     * 
-     * @param message the SMSMessage entity to save
-     * @throws DataIntegrityViolationException if a duplicate messageId is detected
+     * Persists an SMSMessage entity to the database.
+     * Ensures that every SMS message has a unique messageId to prevent duplication and ensure traceability.
+     * Implement proper synchronization mechanisms and atomic operations to ensure data integrity under high load.
+     *
+     * @param message the SMSMessage entity to be saved
      */
     void save(DomainEntitySMSMessage message);
 
     /**
      * Retrieves an SMSMessage entity based on its unique messageId.
-     * 
+     *
      * @param messageId the unique identifier of the SMSMessage
      * @return an Optional containing the SMSMessage if found, or empty if not found
      */
@@ -25,13 +30,11 @@ public interface DomainPortSMSMessageRepositoryPort {
 
     /**
      * Updates the status of an existing SMSMessage in the database.
-     * Must ensure data integrity and consistency when performing the update, handling potential concurrency issues.
-     * 
+     * The status should reflect whether the message has been 'validated' or has 'failed'.
+     * Use atomic operations to prevent inconsistent data states due to race conditions or concurrent modifications.
+     *
      * @param messageId the unique identifier of the SMSMessage
-     * @param status the new status to set
-     * @throws ResourceNotFoundException if the SMSMessage with the given messageId does not exist
-     * @throws ConcurrencyException if a concurrency conflict is detected
+     * @param status    the new status of the SMSMessage
      */
     void updateStatus(String messageId, SharedEnumMessageStatusEnum status);
-
 }

@@ -5,45 +5,55 @@ import ai.shreds.shared.SharedSMSMessageDTO;
 import ai.shreds.shared.SharedResponseDTO;
 import ai.shreds.adapter.exceptions.AdapterException;
 import ai.shreds.adapter.exceptions.AdapterExceptionValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/messages")
 public class AdapterMessageController {
 
-    @Autowired
-    private ApplicationInputPortMessageReceptionPort messageReceptionPort;
+    private final ApplicationInputPortMessageReceptionPort messageReceptionPort;
 
-    @PostMapping
-    public SharedResponseDTO receiveMessage(@RequestBody SharedSMSMessageDTO messageDto) throws AdapterException, AdapterExceptionValidationException {
-        try {
-            return messageReceptionPort.receiveMessage(messageDto);
-        } catch (AdapterExceptionValidationException e) {
-            SharedResponseDTO errorResponse = new SharedResponseDTO();
-            errorResponse.setStatus("FAILED");
-            errorResponse.setMessage(e.getMessage());
-            errorResponse.setErrors(List.of(e.getMessage()));
-            return errorResponse;
-        } catch (AdapterException e) {
-            SharedResponseDTO errorResponse = new SharedResponseDTO();
-            errorResponse.setStatus("FAILED");
-            errorResponse.setMessage("Internal Server Error");
-            return errorResponse;
-        }
+    public AdapterMessageController(ApplicationInputPortMessageReceptionPort messageReceptionPort) {
+        this.messageReceptionPort = messageReceptionPort;
+    }
+
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public SharedResponseDTO receiveMessage(@RequestBody SharedSMSMessageDTO messageDto) {
+        return messageReceptionPort.receiveMessage(messageDto);
+    }
+
+    @ExceptionHandler(AdapterExceptionValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public SharedResponseDTO handleValidationException(AdapterExceptionValidationException ex) {
+        SharedResponseDTO response = new SharedResponseDTO();
+        response.setStatus("FAILURE");
+        response.setMessage("Validation Error");
+        response.setErrors(List.of(ex.getMessage()));
+        response.setMessageId(null);
+        return response;
+    }
+
+    @ExceptionHandler(AdapterException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public SharedResponseDTO handleAdapterException(AdapterException ex) {
+        SharedResponseDTO response = new SharedResponseDTO();
+        response.setStatus("FAILURE");
+        response.setMessage("Processing Error");
+        response.setErrors(List.of("An internal processing error occurred."));
+        response.setMessageId(null);
+        return response;
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<SharedResponseDTO> handleGeneralException(Exception e) {
-        SharedResponseDTO errorResponse = new SharedResponseDTO();
-        errorResponse.setStatus("FAILED");
-        errorResponse.setMessage("Unexpected error occurred");
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public SharedResponseDTO handleGeneralException(Exception ex) {
+        SharedResponseDTO response = new SharedResponseDTO();
+        response.setStatus("FAILURE");
+        response.setMessage("Internal Server Error");
+        response.setErrors(List.of("An unexpected error occurred."));
+        response.setMessageId(null);
+        return response;
     }
 }

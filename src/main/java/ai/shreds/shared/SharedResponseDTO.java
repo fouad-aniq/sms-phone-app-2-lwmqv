@@ -1,21 +1,37 @@
 package ai.shreds.shared;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class SharedResponseDTO {
-    private String status;
-    private String message;
-    private String messageId;
-    private List<String> errors;
+    private final String status;
+    private final String message;
+    private final String messageId;
+    private final List<String> errors;
+
+    // Factory method for success response
+    public static SharedResponseDTO success(String messageId, String message) {
+        return SharedResponseDTO.builder()
+                .status("SUCCESS")
+                .message(message)
+                .messageId(messageId)
+                .errors(null) // Ensure errors are null in success case
+                .build();
+    }
+
+    // Factory method for error response
+    public static SharedResponseDTO error(String messageId, String message, List<String> errors) {
+        return SharedResponseDTO.builder()
+                .status("ERROR")
+                .message(message)
+                .messageId(messageId)
+                .errors(errors)
+                .build();
+    }
 }

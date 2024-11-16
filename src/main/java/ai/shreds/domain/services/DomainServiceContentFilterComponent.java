@@ -1,41 +1,44 @@
 package ai.shreds.domain.services;
 
-import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Arrays;
 
 public class DomainServiceContentFilterComponent {
+
     private static final int MAX_CONTENT_LENGTH = 160;
-    private List<String> prohibitedContentList;
+    private Set<String> prohibitedWords;
 
     public DomainServiceContentFilterComponent() {
-        // Load prohibited content list from a configurable data source
-        // For demonstration, we initialize it with some sample prohibited words
-        this.prohibitedContentList = loadProhibitedContentList();
-    }
-
-    public DomainServiceContentFilterComponent(List<String> prohibitedContentList) {
-        this.prohibitedContentList = prohibitedContentList;
-    }
-
-    private List<String> loadProhibitedContentList() {
-        // In a real-world scenario, this method would load the list from a database or external file
-        return Arrays.asList("prohibitedWord1", "prohibitedPhrase1");
+        // Load prohibited words from configurable data source
+        this.prohibitedWords = loadProhibitedWords();
     }
 
     public boolean checkForProhibitedContent(String content) {
-        for (String prohibitedWord : prohibitedContentList) {
-            if (content.toLowerCase().contains(prohibitedWord.toLowerCase())) {
-                return true; // Prohibited content found
+        if (prohibitedWords == null || prohibitedWords.isEmpty()) {
+            prohibitedWords = loadProhibitedWords();
+        }
+        for (String word : prohibitedWords) {
+            if (content.contains(word)) {
+                return true; // prohibited content found
             }
         }
-        return false; // No prohibited content found
+        return false; // no prohibited content found
     }
 
     public boolean validateContentLength(String content) {
         return content.length() <= MAX_CONTENT_LENGTH;
     }
 
-    public void updateProhibitedContentList(List<String> newProhibitedContentList) {
-        this.prohibitedContentList = newProhibitedContentList;
+    public void reloadProhibitedContentList() {
+        // Logic to reload the prohibited words list without restarting the application
+        prohibitedWords = loadProhibitedWords();
+    }
+
+    private Set<String> loadProhibitedWords() {
+        // Load prohibited words from configurable data source (e.g., database, external file)
+        // Implement the actual loading mechanism here
+        // For demonstration purposes, return a hardcoded set
+        return new HashSet<>(Arrays.asList("prohibitedWord1", "prohibitedPhrase1"));
     }
 }

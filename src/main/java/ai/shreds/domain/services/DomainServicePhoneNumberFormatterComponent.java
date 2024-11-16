@@ -1,40 +1,50 @@
 package ai.shreds.domain.services;
 
-import ai.shreds.domain.exceptions.DomainExceptionValidationException;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
+@RequiredArgsConstructor
 public class DomainServicePhoneNumberFormatterComponent {
 
-    private final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+    private static final Logger logger = LoggerFactory.getLogger(DomainServicePhoneNumberFormatterComponent.class);
+    private final PhoneNumberUtil phoneNumberUtil;
 
     public boolean isValidPhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            logger.error("Phone number is null or empty");
             return false;
         }
         try {
-            PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber, null);
+            PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber, "US"); // Default to US if no region
             return phoneNumberUtil.isValidNumber(parsedNumber);
         } catch (NumberParseException e) {
+            logger.error("Number parsing failed", e);
             return false;
         }
     }
 
     public String formatPhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
-            return phoneNumber;
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            logger.error("Phone number is null or empty");
+            return null;
         }
         try {
-            PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber, null);
-            if (!phoneNumberUtil.isValidNumber(parsedNumber)) {
-                throw new DomainExceptionValidationException("Invalid phone number format.");
+            PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber, "US"); // Default to US if no region
+            if (phoneNumberUtil.isValidNumber(parsedNumber)) {
+                return phoneNumberUtil.format(parsedNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+            } else {
+                logger.warn("Invalid phone number: {}", phoneNumber);
+                return null;
             }
-            return phoneNumberUtil.format(parsedNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
         } catch (NumberParseException e) {
-            throw new DomainExceptionValidationException("Error parsing phone number.", e);
+            logger.error("Failed to format phone number", e);
+            return null;
         }
     }
 }

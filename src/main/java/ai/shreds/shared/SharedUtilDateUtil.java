@@ -6,12 +6,10 @@ import java.time.format.DateTimeFormatter;
 public final class SharedUtilDateUtil {
 
     private SharedUtilDateUtil() {
-        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static String getCurrentTimestamp() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        return now.format(formatter);
+        return LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }

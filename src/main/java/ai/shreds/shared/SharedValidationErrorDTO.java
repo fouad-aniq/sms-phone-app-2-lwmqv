@@ -1,30 +1,29 @@
 package ai.shreds.shared;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
-
 import java.sql.Timestamp;
 
 /**
- * A data transfer object that captures details of validation errors encountered during the validation of an SMSMessage.
+ * Data Transfer Object for capturing validation error details encountered during the validation of an SMSMessage.
  */
-@Getter
-@ToString
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class SharedValidationErrorDTO {
     /**
-     * Standardized error code for the validation error.
+     * Error code representing the validation error type, adhering to standardized error codes as per the technical specifications.
      */
-    private final String errorCode;
+    private String errorCode;
 
     /**
-     * Human-readable error message describing the validation error.
+     * Detailed description of the validation error.
      */
-    private final String errorMessage;
+    private String errorMessage;
 
     /**
-     * Timestamp indicating when the validation error occurred.
+     * Timestamp indicating when the error occurred.
      */
-    private final Timestamp timestamp;
+    private Timestamp timestamp;
 }

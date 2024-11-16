@@ -1,67 +1,44 @@
 package ai.shreds.shared;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Size;
 import java.util.Map;
-import java.util.List;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SharedSMSMessageDTO {
 
-    @NotNull(message = "messageId cannot be null")
+    @NotNull(message = "Message ID is required")
+    @JsonProperty("messageId")
     private String messageId;
 
-    @NotNull(message = "recipientNumber cannot be null")
-    @Pattern(regexp = "^\\+\\d{1,15}$", message = "Invalid recipient number format")
+    @NotNull(message = "Recipient number is required")
+    @Pattern(
+        regexp = "\\+[1-9]\\d{1,14}$",
+        message = "Recipient number must be a valid international number starting with +"
+    )
+    @JsonProperty("recipientNumber")
     private String recipientNumber;
 
-    @NotNull(message = "content cannot be null")
-    @Size(max = 160, message = "Content must not exceed 160 characters")
+    @NotNull(message = "Content is required")
+    @Size(
+        max = 160,
+        message = "Content must not exceed 160 characters"
+    )
+    @JsonProperty("content")
     private String content;
 
+    @JsonProperty("metadata")
     private Map<String, String> metadata;
 
-    @AssertTrue(message = "Content contains prohibited words")
-    private boolean isContentValid() {
-        List<String> prohibitedWords = List.of("prohibitedWord1", "prohibitedWord2"); // Example prohibited words
-        if (content == null) {
-            return true; // NotNull validation will handle null
-        }
-        for (String word : prohibitedWords) {
-            if (content.toLowerCase().contains(word.toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @AssertTrue(message = "Invalid metadata")
-    private boolean isMetadataValid() {
-        if (metadata == null || metadata.isEmpty()) {
-            return true;
-        }
-        // Validate 'timestamp' if present in metadata
-        if (metadata.containsKey("timestamp")) {
-            String timestamp = metadata.get("timestamp");
-            try {
-                DateTimeFormatter.ISO_DATE_TIME.parse(timestamp);
-            } catch (DateTimeParseException e) {
-                return false;
-            }
-        }
-        // Add additional metadata validation if needed
-        return true;
-    }
+    // Additional validation logic can be added here if needed
 }

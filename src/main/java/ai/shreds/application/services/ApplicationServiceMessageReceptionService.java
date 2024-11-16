@@ -2,36 +2,37 @@ package ai.shreds.application.services;
 
 import ai.shreds.application.exceptions.ApplicationException;
 import ai.shreds.application.ports.ApplicationInputPortMessageReceptionPort;
-import ai.shreds.application.ports.ApplicationOutputPortMessageValidationPort;
-import ai.shreds.application.ports.ApplicationOutputPortMessagePreprocessingPort;
 import ai.shreds.application.ports.ApplicationOutputPortAcknowledgmentPort;
-import ai.shreds.domain.ports.DomainPortSMSMessageRepositoryPort;
-import ai.shreds.shared.SharedSMSMessageDTO;
-import ai.shreds.shared.SharedResponseDTO;
-import ai.shreds.shared.SharedValidationErrorDTO;
+import ai.shreds.application.ports.ApplicationOutputPortMessagePreprocessingPort;
+import ai.shreds.application.ports.ApplicationOutputPortMessageValidationPort;
 import ai.shreds.domain.entities.DomainEntitySMSMessage;
+import ai.shreds.domain.entities.DomainEntityValidationError;
+import ai.shreds.domain.ports.DomainPortSMSMessageRepositoryPort;
 import ai.shreds.shared.SharedEnumMessageStatusEnum;
+import ai.shreds.shared.SharedResponseDTO;
+import ai.shreds.shared.SharedSMSMessageDTO;
 import ai.shreds.shared.SharedUtilDateUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ApplicationServiceMessageReceptionService implements ApplicationInputPortMessageReceptionPort {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationServiceMessageReceptionService.class);
+
     private final ApplicationOutputPortMessageValidationPort validationPort;
     private final ApplicationOutputPortMessagePreprocessingPort preprocessingPort;
     private final ApplicationOutputPortAcknowledgmentPort acknowledgmentPort;
-    private final DomainPortSMSMessageRepositoryPort messageRepositoryPort;
+    private final DomainPortSMSMessageRepositoryPort smsMessageRepositoryPort;
 
     @Override
     public SharedResponseDTO receiveMessage(SharedSMSMessageDTO messageDto) {
         try {
-            // Convert DTO to Domain Entity
             DomainEntitySMSMessage domainMessage = new DomainEntitySMSMessage();
             domainMessage.setMessageId(messageDto.getMessageId());
             domainMessage.setRecipientNumber(messageDto.getRecipientNumber());
@@ -39,29 +40,24 @@ public class ApplicationServiceMessageReceptionService implements ApplicationInp
             domainMessage.setMetadata(messageDto.getMetadata());
             domainMessage.setStatus(SharedEnumMessageStatusEnum.RECEIVED);
             domainMessage.setCreatedAt(SharedUtilDateUtil.getCurrentTimestamp());
-            domainMessage.setUpdatedAt(SharedUtilDateUtil.getCurrentTimestamp());
 
-            // Check for unique messageId
-            Optional<DomainEntitySMSMessage> existingMessage = messageRepositoryPort.findByMessageId(domainMessage.getMessageId());
-            if (existingMessage.isPresent()) {
-                return acknowledgmentPort.createErrorResponse(domainMessage.getMessageId(), List.of(new SharedValidationErrorDTO("DUPLICATE_ID", "Message ID already exists", SharedUtilDateUtil.getCurrentTimestamp())));
-            }
+            smsMessageRepositoryPort.save(domainMessage);
 
-            // Validate Message
-            List<SharedValidationErrorDTO> validationErrors = validationPort.validateMessage(domainMessage);
+            List<DomainEntityValidationError> validationErrors = validationPort.validateMessage(domainMessage);
             if (!validationErrors.isEmpty()) {
+                smsMessageRepositoryPort.updateStatus(domainMessage.getMessageId(), SharedEnumMessageStatusEnum.FAILED);
                 return acknowledgmentPort.createErrorResponse(domainMessage.getMessageId(), validationErrors);
             }
 
-            // Preprocess Message
             preprocessingPort.prepareForRouting(domainMessage);
-
-            // Create Success Response
+            smsMessageRepositoryPort.updateStatus(domainMessage.getMessageId(), SharedEnumMessageStatusEnum.VALIDATED);
             return acknowledgmentPort.createSuccessResponse(domainMessage.getMessageId());
-
+        } catch (ApplicationException e) {
+            logger.error("ApplicationException occurred while processing message: {}", e.getMessage());
+            return acknowledgmentPort.createErrorResponse(messageDto.getMessageId(), e.getMessage());
         } catch (Exception e) {
-            // Throw ApplicationException
-            throw new ApplicationException("Error processing message: " + e.getMessage(), e);
+            logger.error("Unexpected error during message reception", e);
+            return acknowledgmentPort.createErrorResponse(messageDto.getMessageId(), "An unexpected error occurred.");
         }
     }
 }

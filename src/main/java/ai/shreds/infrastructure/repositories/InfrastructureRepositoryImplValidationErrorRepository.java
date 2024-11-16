@@ -4,12 +4,11 @@ import ai.shreds.domain.entities.DomainEntityValidationError;
 import ai.shreds.domain.ports.DomainPortValidationErrorRepositoryPort;
 import ai.shreds.infrastructure.exceptions.InfrastructureExceptionDataAccessException;
 import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.ArrayList;
 
 @Repository
 public class InfrastructureRepositoryImplValidationErrorRepository implements DomainPortValidationErrorRepositoryPort {
@@ -18,12 +17,14 @@ public class InfrastructureRepositoryImplValidationErrorRepository implements Do
     private EntityManager entityManager;
 
     @Override
-    @Transactional
     public void save(DomainEntityValidationError validationError) {
         try {
+            if (validationError.getErrorCode() == null || validationError.getErrorMessage() == null) {
+                throw new IllegalArgumentException("Error code and message must be provided.");
+            }
             entityManager.persist(validationError);
         } catch (Exception e) {
-            throw new InfrastructureExceptionDataAccessException("Failed to save ValidationError", e);
+            throw new InfrastructureExceptionDataAccessException("Error saving ValidationError.", e);
         }
     }
 
@@ -31,13 +32,12 @@ public class InfrastructureRepositoryImplValidationErrorRepository implements Do
     public List<DomainEntityValidationError> findByMessageId(String messageId) {
         try {
             TypedQuery<DomainEntityValidationError> query = entityManager.createQuery(
-                "SELECT ve FROM DomainEntityValidationError ve WHERE ve.messageId = :messageId",
-                DomainEntityValidationError.class
-            );
+                "SELECT v FROM DomainEntityValidationError v WHERE v.messageId = :messageId",
+                DomainEntityValidationError.class);
             query.setParameter("messageId", messageId);
             return query.getResultList();
         } catch (Exception e) {
-            throw new InfrastructureExceptionDataAccessException("Failed to retrieve ValidationErrors by messageId", e);
+            throw new InfrastructureExceptionDataAccessException("Error retrieving ValidationErrors for messageId: " + messageId, e);
         }
     }
 }
