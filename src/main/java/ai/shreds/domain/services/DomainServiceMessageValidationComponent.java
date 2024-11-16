@@ -64,7 +64,7 @@ public class DomainServiceMessageValidationComponent {
             return errors;
         }
         try {
-            Phonenumber.PhoneNumber numberProto = phoneNumberUtil.parse(phoneNumber, null);
+            Phonenumber.PhoneNumber numberProto = phoneNumberUtil.parse(phoneNumber, "US"); // Default to US if no region
             if (!phoneNumberUtil.isValidNumber(numberProto) || !phoneNumber.startsWith("+")) {
                 errors.add(createValidationError("ERR004", "Invalid phone number format."));
             }
@@ -113,7 +113,7 @@ public class DomainServiceMessageValidationComponent {
         error.setMessageId(currentMessageId);
         error.setErrorCode(errorCode);
         error.setErrorMessage(errorMessage);
-        error.setTimestamp(OffsetDateTime.now());
+        error.setTimestamp(Timestamp.from(OffsetDateTime.now().toInstant()));
         return error;
     }
 }
